@@ -10,9 +10,15 @@ class XYZStage(object):
     CMD = 1
     ANS = 2
 
+    AXES = "xyz"
+    STATE_MAP = {"ON": State.On, "MOVING": State.Moving}
+
     def __init__(self, host, port):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.connect((host, port))
+
+    def __del__(self):
+        self._socket.close()
 
     def ask(self, command):
         self._socket.sendall(command)
@@ -38,21 +44,14 @@ class XYZStageMotorController(MotorController):
                   DefaultValue : 5000},
         }
 
-    AXES = "xyz"
-
     def __init__(self, inst, props, *args, **kwargs):
         MotorController.__init__(self, inst, props, *args, **kwargs)
         self.xyz_stage = XYZStage(self.Host, self.Port)
         self._states = {}
         self._raw_states = [None] * 3
 
-    def AddDevice(self, axis):
-        pass
-
-    def DeleteDevice(self, axis):
-        pass
-
-    _STATE_MAP = {"ON": State.On, "MOVING": State.Moving}
+    def __del__(self):
+        del self.xyz_stage
 
     def PreStateAll(self):
         self._raw_states = [None] * 3
@@ -65,7 +64,7 @@ class XYZStageMotorController(MotorController):
         idx = axis - 1
         raw_state = self._raw_states[idx]
         limit_switches = 0
-        state = self._STATE_MAP.get(raw_state, State.Unknown)
+        state = XYZStage.STATE_MAP.get(raw_state, State.Unknown)
         return state, limit_switches
 
     def PreReadAll(self):
@@ -86,7 +85,7 @@ class XYZStageMotorController(MotorController):
 
     def StartOne(self, axis, pos):
         idx = axis - 1
-        axis_name = self.AXES[idx]
+        axis_name = XYZStage.AXES[idx]
         self.xyz_stage.ask("move %s %f" % (axis_name, pos))
 
     def AbortOne(self, axis):
