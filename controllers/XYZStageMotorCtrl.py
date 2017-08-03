@@ -27,7 +27,7 @@ class XYZStage(object):
         if (len(data) < 3 or
             data[self.ACQ] != "OK" or
             data[self.CMD] != command):
-            raise Exception("Coomunication error")
+            raise Exception("Comnunication error")
         return data[self.ANS]
 
 
