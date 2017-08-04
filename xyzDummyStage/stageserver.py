@@ -45,7 +45,15 @@ class SocketListenerThread(Thread):
             ans = 'OK:'+cmd+':aborted'
         if cmd.startswith('move'):                  # MOVE <X|Y|Z> <POS>' 
             ans = 'OK:'+cmd+':'+move_motor(cmd)
-
+        if cmd.startswith('label'):
+            _, axis, label = cmd.split(' ', 2) 
+            set_label(axis, label)
+            ans = 'OK:'+cmd+':'+label
+        if cmd.startswith('color'):
+            _, color = cmd.split()
+            set_color(color)
+            ans = 'OK:'+cmd+':'+color
+        'label x text'
         ### TODO: MOVE MULTIPLE
         ###       ACCELERATION + VELOCITY + ?LIMITS?
         ###       IMPLEMENT MULTIPLE CLIENT CONNECTIONS? MAY HELP DEBUGGING :-D
@@ -59,18 +67,42 @@ class SocketListenerThread(Thread):
 
 
 def clear():
-    global motors, x, y, z
+    global motors, x, y, z, color, xlabel, ylabel, zlabel
     with lock:
         motors = [Motion(), Motion(), Motion()]
         x = [0]
         y = [0]
         z = [0]
+        color = 'red' 
+        xlabel = 'X axis'
+        ylabel = 'Y axis'
+        zlabel = 'Z axis'
         for m in motors:
             m.setMinVelocity(0)
             m.setMaxVelocity(100)
             m.setAccelerationTime(2)
             m.setDecelerationTime(2)
             m.setCurrentPosition(0)
+        
+
+def set_label(axis, label):
+    global xlabel, ylabel, zlabel
+    if axis.lower() == 'x':
+        xlabel = label
+    elif axis.lower() == 'y':
+        ylabel = label
+    elif axis.lower() == 'z':
+        zlabel = label
+#    return 'Axis {0} label has been changed'.format(axis)
+     
+            
+def set_color(new_color):
+    global color
+    color = new_color
+    
+def set_legend_label(new_label):
+    global label
+    label = new_label
 
 def get_states():
     global motors
@@ -105,7 +137,7 @@ def abort():
         m.abortMotion()
 
 def update(i):
-    global motors, x, y, z
+    global motors, x, y, z, color
     with lock:
         if len(x) == MAX_POINTS:
             x.pop(0)
@@ -118,10 +150,16 @@ def update(i):
     point.set_3d_properties(z[-1], 'z')
     line.set_data(x,y)
     line.set_3d_properties(z, 'z')
-
+    # update color
+    line.set_color(color)
+    point.set_color(color)
+    # update label
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_zlabel(zlabel)
 
 if __name__ == '__main__':
-    global x, y, z, motors
+    global x, y, z, motors, color, xlabel, ylabel, zlabel
 
     lock = Lock()
     clear()
@@ -132,16 +170,22 @@ if __name__ == '__main__':
 
     MAX_POINTS=1000
     xmax=1000
-    point, = ax.plot([x[0]], [y[0]], [z[0]], 'o')
-    line, = ax.plot(x, y, z, label='Trajectory')
+    
+    color = 'red' 
+    xlabel = 'X axis'
+    ylabel = 'Y axis'
+    zlabel = 'Z axis'
+    
+    point, = ax.plot([x[0]], [y[0]], [z[0]], 'o', color=color)
+    line, = ax.plot(x, y, z, color=color)
 
-    ax.legend()
+    
     ax.set_xlim([-100, 100])
-    ax.set_xlabel('X axis')
+    ax.set_xlabel(xlabel)
     ax.set_ylim([-100, 100])
-    ax.set_ylabel('Y axis')
+    ax.set_ylabel(ylabel)
     ax.set_zlim([-100, 100])
-    ax.set_zlabel('Z axis')
+    ax.set_zlabel(zlabel)
 
 
     ADDR = ('127.0.0.1', 5000)
