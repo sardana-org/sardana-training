@@ -11,18 +11,23 @@ class SocketListenerThread(Thread):
     def __init__(self, serversock):
         Thread.__init__(self)
         self.serversock = serversock
+        self.serve = True
         self.clientsock = None
 
     def run(self):
-        try:
-            self.clientsock, addr = self.serversock.accept()
-            while True:
-                data = self.clientsock.recv(9046)
-                if data == '': break
-                ans = self.parse_cmd(data.lower().strip())
-                self.clientsock.send(ans)
-        except Exception,e:
-            print 'oups',e
+        while self.serve:
+            try:
+                self.clientsock, addr = self.serversock.accept()
+                try:
+                    while True:
+                        data = self.clientsock.recv(4096)
+                        if data == '': break
+                        ans = self.parse_cmd(data.lower().strip())
+                        self.clientsock.send(ans)
+                except Exception,e:
+                    pass # forced by a socket shutdown
+            except Exception,e:
+                pass # forced by a socket shutdown
 
     def parse_cmd(self, cmd):
         ans = 'NOK:'+cmd
@@ -39,6 +44,7 @@ class SocketListenerThread(Thread):
     def shutdown(self):
         if self.clientsock is not None:
             self.clientsock.shutdown(0)
+        self.serve = False
         self.serversock.shutdown(0)
 
 
