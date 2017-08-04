@@ -4,6 +4,10 @@ from sardana.pool.controller import MotorController, Type, Description,\
     DefaultValue
 
 
+class CommunicationError(Exception):
+    pass
+
+
 class XYZStage(object):
 
     ACQ = 0
@@ -21,13 +25,16 @@ class XYZStage(object):
         self._socket.close()
 
     def ask(self, command):
-        self._socket.sendall(command)
-        data = self._socket.recv(4096)
+        try:
+            self._socket.sendall(command)
+            data = self._socket.recv(4096)
+        except:
+            raise CommunicationError("send/recv failed")
         data = data.split(":")
         if (len(data) < 3 or
             data[self.ACQ] != "OK" or
             data[self.CMD] != command):
-            raise Exception("Comnunication error")
+            raise CommunicationError("unrecognized response")
         return data[self.ANS]
 
 
