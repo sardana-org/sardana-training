@@ -72,45 +72,23 @@ class XYZStageMotorController(MotorController):
     def __del__(self):
         del self.xyz_stage
 
-    def GetAxisExtraPar(self, axis, name):
+    def getLabel(self):
+        return self.Label
 
-        name = name.lower()
-        if name == 'label':
-
-            return self.Label
-
-    def GetCtrlPar(self, parameter):
-
-        _parameter = parameter.lower()
-        if _parameter == 'color':
-
-            return self.Color
-
-    def SetAxisExtraPar(self, axis, parameter, value):
-
-        _parameter = parameter.lower()
-        if _parameter == 'label':
-
-            self.Label = value
-            self.SetLabel(axis)
-
-    def SetCtrlPar(self, parameter, value):
-
-        parameter = parameter.lower()
-        if parameter == 'color':
-
-            self.Color = value
-            self.SetColor()
-
-    def SetLabel(self, axis):
+    def setLabel(self, axis, value):
 
         idx = axis - 1
         axis_name = XYZStage.AXES[idx]
-        self.xyz_stage.ask("label %s %s" % (axis_name, self.Label))
+        self.xyz_stage.ask("label %s %s" % (axis_name, value))
+        self.Label = value
 
-    def SetColor(self):
+    def getColor(self):
+        return self.Color
 
-        self.xyz_stage.ask("color %s" % (self.Color))
+    def setColor(self, value):
+
+        self.xyz_stage.ask("color %s" % value)
+        self.Color = value
 
     def PreStateAll(self):
         self._raw_states = [None] * 3
