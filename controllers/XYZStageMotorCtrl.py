@@ -51,6 +51,18 @@ class XYZStageMotorController(MotorController):
                   DefaultValue : 5000},
         }
 
+    axis_attributes = \
+    {
+        "Label": {Type : str,
+                  Description : 'The name of axis label' }
+    }
+
+    ctrl_attributes = \
+    {
+        "Color": {Type : str,
+                  Description : 'The color of plot line' }
+    }
+
     def __init__(self, inst, props, *args, **kwargs):
         MotorController.__init__(self, inst, props, *args, **kwargs)
         self.xyz_stage = XYZStage(self.Host, self.Port)
@@ -59,6 +71,46 @@ class XYZStageMotorController(MotorController):
 
     def __del__(self):
         del self.xyz_stage
+
+    def GetAxisExtraPar(self, axis, name):
+
+        name = name.lower()
+        if name == 'label':
+
+            return self.Label
+
+    def GetCtrlPar(self, parameter):
+
+        _parameter = parameter.lower()
+        if _parameter == 'color':
+
+            return self.Color
+
+    def SetAxisExtraPar(self, axis, parameter, value):
+
+        _parameter = parameter.lower()
+        if _parameter == 'label':
+
+            self.Label = value
+            self.SetLabel(axis)
+
+    def SetCtrlPar(self, parameter, value):
+
+        parameter = parameter.lower()
+        if parameter == 'color':
+
+            self.Color = value
+            self.SetColor()
+
+    def SetLabel(self, axis):
+
+        idx = axis - 1
+        axis_name = XYZStage.AXES[idx]
+        self.xyz_stage.ask("label %s %s" % (axis_name, self.Label))
+
+    def SetColor(self):
+
+        self.xyz_stage.ask("color %s" % (self.Color))
 
     def PreStateAll(self):
         self._raw_states = [None] * 3
