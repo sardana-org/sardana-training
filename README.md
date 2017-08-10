@@ -9,7 +9,7 @@ The training materials contains:
 * practical examples of the controllers
   
 The idea is to move as much as possible of this information to the [Sardana
-documentation]http://www.sardana-controls.org).
+documentation](http://www.sardana-controls.org)).
 
 The recommended order of reviewing these materials is:
 1. General
@@ -25,7 +25,7 @@ A short description of each of the notebooks can be found below.
 current implementation of the plugin system. Then it describes the core
 classes of Sardana. In continuouation the Pool and MacroServer core components
 are reviewed. At the end some miscellaneous topics are presented, for example
-how Sardana implements uses threads to achieve concurrent behaviors.
+how Sardana uses threads to achieve concurrent behaviors.
 
 2. Pool - reviews all the Pool elements like for example Pool moveables or
 experimental channels and their interfaces. It also demonstrate how are they
@@ -36,8 +36,8 @@ access a particular hardware or to achieve a specific calculation results for th
 pseduo elements. This materials are supported by some examples of controllers
 that can be found in the controllers sub-directory.
 
-4. MacroServer - reviews all the macro features and describes the rolse of
-the other MacroServer components. At the end the macro execution client
+4. MacroServer - reviews all the macro features and describes the roles of
+other MacroServer components. At the end the macro execution client
 application, like Spock, are exmplained.
 
 5. Macros - explains in more detail some macro features and demonstrates some
@@ -46,5 +46,5 @@ real examples of their use cases.
 6. Contributors - teaches about the contributors tools and practices. It is
 useful if you plan to get involved (more or less) in the project.
 
-These materials were prepared in rush, so forgive the authors if you find
-mistakes. If you do so, don't forget to report them or just propose a pull request.
+These materials were prepared in rush, so forgive the authors any mistakes/typos.
+If so, don't forget to report them or just propose a pull request.
