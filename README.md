@@ -9,7 +9,7 @@ The training materials contains:
 * practical examples of the controllers
   
 The idea is to move as much as possible of this information to the [Sardana
-documentation](http://www.sardana-controls.org)).
+documentation](http://www.sardana-controls.org).
 
 The recommended order of reviewing these materials is:
 1. General
