@@ -51,6 +51,18 @@ class XYZStageMotorController(MotorController):
                   DefaultValue : 5000},
         }
 
+    axis_attributes = \
+    {
+        "Label": {Type : str,
+                  Description : 'The name of axis label' }
+    }
+
+    ctrl_attributes = \
+    {
+        "Color": {Type : str,
+                  Description : 'The color of plot line' }
+    }
+
     def __init__(self, inst, props, *args, **kwargs):
         MotorController.__init__(self, inst, props, *args, **kwargs)
         self.xyz_stage = XYZStage(self.Host, self.Port)
@@ -59,6 +71,24 @@ class XYZStageMotorController(MotorController):
 
     def __del__(self):
         del self.xyz_stage
+
+    def getLabel(self):
+        return self.Label
+
+    def setLabel(self, axis, value):
+
+        idx = axis - 1
+        axis_name = XYZStage.AXES[idx]
+        self.xyz_stage.ask("label %s %s" % (axis_name, value))
+        self.Label = value
+
+    def getColor(self):
+        return self.Color
+
+    def setColor(self, value):
+
+        self.xyz_stage.ask("color %s" % value)
+        self.Color = value
 
     def PreStateAll(self):
         self._raw_states = [None] * 3
