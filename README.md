@@ -37,8 +37,8 @@ the pseduo elements. This materials are supported by some examples of
 controllers that can be found in the controllers sub-directory.
 
 4. MacroServer - reviews all the macro features and describes the roles of
-other MacroServer components. At the end the macro execution client
-application, like Spock, are explained.
+other MacroServer components. At the end, some macro execution client
+applications, like Spock, are explained.
 
 5. Macros - explains in more detail some macro features and demonstrates some
 real examples of their use cases.
