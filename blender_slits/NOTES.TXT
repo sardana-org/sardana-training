@@ -1,0 +1,14 @@
+IN ORDER TO UNDERSTAND THE SYSTEM, I ENCOURAGE YOU TO EXECUTE:
+$ blenderplayer slits_keyboard_only.blend
+
+you can use arrows (up/down/left/right) to open horizontal and vertical gaps
+with the <SHIFT> modifier you will inverse the movement of each blade:
+UP arrow will move TOP blade UP, and <SHIFT>+<UP> will move TOP blade UP
+DOWN arrow will move BOTTOM blade DOWN, and <SHIFT>+<DOWN> will move BOTTOM blade UP
+and the same for left and right.
+you can exit with Q or <Ctrl>+C
+
+
+IN ORDER TO RUN A TCP SOCKET SERVER, YOU CAN PLAY WITH THE SYSTEM IN TWO TERMINALS:
+TERM1: $ blenderplayer slits.blend
+TERM2: $ python play_slits.py
