@@ -112,7 +112,7 @@ def execute_cmd(cmd):
             p = m.getCurrentPosition()
             m.startMotion(p, cmd_v)
 
-    if cmd_args[0] in [b'acc', b'vel']:
+    if cmd_args[0] in [b'acc', b'dec', b'vel']:
         #<acc/vel> <motor> <value>
         cmd_m = motors[cmd_args[1]]
         cmd_v = float(cmd_args[2])
@@ -122,9 +122,11 @@ def execute_cmd(cmd):
 
     if cmd.startswith(b'acc'):
         cmd_m.setAccelerationTime(cmd_v)
+
+    if cmd.startswith(b'dec'):
         cmd_m.setDecelerationTime(cmd_v)
-    
-    if cmd_args[0] in [b'?pos', b'?state', b'?vel', b'?acc']:
+
+    if cmd_args[0] in [b'?pos', b'?state', b'?vel', b'?acc', b'?dec']:
         cmd_m = motors[cmd_args[1]]
         ans = cmd_args[0][1:].decode('utf-8')
         ans += ' '+cmd_args[1].decode('utf-8')
@@ -138,6 +140,8 @@ def execute_cmd(cmd):
                 ans += ' ON'
         if cmd_args[0] == b'?acc':
             ans += ' '+str(cmd_m.getAccelerationTime())
+        if cmd_args[0] == b'?dec':
+            ans += ' '+str(cmd_m.getDecelerationTime())
         if cmd_args[0] == b'?vel':
             ans += ' '+str(cmd_m.getMaxVelocity())
         return ans+'\n'        
