@@ -85,7 +85,7 @@ class BlenderBladesMotorController(MotorController):
         axis_name = self.AXIS_NAMES[axis]
         blender_blades = self.blender_blades
         ans = blender_blades.ask("?state {0}".format(axis_name))
-        state_raw = ans.split()[1]
+        state_raw = ans.split()[self.VALUE]
         state = self.STATES[state_raw]
         limit_switches = MotorController.NoLimitSwitch
         return state, limit_switches
@@ -94,7 +94,7 @@ class BlenderBladesMotorController(MotorController):
         axis_name = self.AXIS_NAMES[axis]
         blender_blades = self.blender_blades
         ans = blender_blades.ask("?pos {0}".format(axis_name))
-        position_raw = ans.split()[1]
+        position_raw = ans.split()[self.VALUE]
         position = float(position_raw)
         return position
 
@@ -113,18 +113,18 @@ class BlenderBladesMotorController(MotorController):
         name = name.lower()
         if name == "acceleration":
             ans = blender_blades.ask("?acc {0}".format(axis_name))
-            acc_raw = ans.split()[1]
+            acc_raw = ans.split()[self.VALUE]
             v = float(acc_raw)
         elif name == "deceleration":
             # TODO: implement deceleration
             ans = blender_blades.ask("?dec {0}".format(axis_name))
-            dec_raw = ans.split()[1]
+            dec_raw = ans.split()[self.VALUE]
             v = float(dec_raw)
         elif name == "base_rate":
             v = 0
         elif name == "velocity":
             ans = blender_blades.ask("?vel {0}".format(axis_name))
-            vel_raw = ans.split()[1]
+            vel_raw = ans.split()[self.VALUE]
             v = float(vel_raw)
         elif name == "step_per_unit":
             v = 1
