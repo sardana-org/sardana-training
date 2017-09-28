@@ -35,7 +35,7 @@ ask('?state left')
 ask('?state right')
 
 print('\n\n# QUERY STATES WITH ?states')
-ask('?positions')
+ask('?states')
 
 print('\n\n# MOVE BLADES BY ISSUING <MOTOR> <POS>')
 ask('top 50')

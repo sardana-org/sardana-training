@@ -3,7 +3,7 @@ $ blenderplayer slits_keyboard_only.blend
 
 you can use arrows (up/down/left/right) to open horizontal and vertical gaps
 with the <SHIFT> modifier you will inverse the movement of each blade:
-UP arrow will move TOP blade UP, and <SHIFT>+<UP> will move TOP blade UP
+UP arrow will move TOP blade UP, and <SHIFT>+<UP> will move TOP blade DOWN
 DOWN arrow will move BOTTOM blade DOWN, and <SHIFT>+<DOWN> will move BOTTOM blade UP
 and the same for left and right.
 you can exit with Q or <Ctrl>+C
