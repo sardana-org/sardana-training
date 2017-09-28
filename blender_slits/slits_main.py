@@ -131,13 +131,14 @@ def execute_cmd(cmd):
         return ans+'\n'
 
     if cmd.startswith(b'?states'):
+        ans = cmd_args[0][1:].decode('utf-8')
         states = []
         for n in motor_names:
             if motors[n].isInMotion():
                 states.append('MOVING')
             else:
                 states.append('ON')
-        ans = ' '.join(states)
+        ans += ' '.join(states)
         return ans+'\n'
 
 
