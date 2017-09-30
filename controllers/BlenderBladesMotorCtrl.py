@@ -52,13 +52,19 @@ class BlenderBlades(object):
 
 
 class BlenderBladesMotorController(MotorController):
-    """A motor controller intended from demonstration purposes only."""
+    """A motor controller that inverfaces slit system composed from horizontal
+    (left and right) and vertical (bottom and top) blades.
+
+    The slit system must be rendered with blender player prior to the init of
+    the controller: blenderplayer sardana-training/blender_slits/slits.blend.
+    """
 
     ctrl_properties = \
-        {'Host': {Type : str,
-                  Description : 'Host where runs the blander blades server' },
-         'Port': {Type : int,
-                  Description : 'Port the blender blades server listens on',
+        {"Host": {Type : str,
+                  Description : "Host where runs the blander blades server",
+                  DefaultValue : "localhost"},
+         "Port": {Type : int,
+                  Description : "Port the blender blades server listens on",
                   DefaultValue : 9999},
         }
 
