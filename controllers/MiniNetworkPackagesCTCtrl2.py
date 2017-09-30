@@ -16,33 +16,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with Sardana-Training.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os
+
 import time
+import os
 from sardana import State
-from sardana.pool.controller import CounterTimerController, Type,\
-    Description, DefaultValue
+from sardana.pool.controller import CounterTimerController
 
 
-def read_network_counts(interface):
-    cmd = 'cat /proc/net/dev | grep {0}'.format(interface)
-    with os.popen(cmd) as fd:
-        output = fd.read()
-        recv_bytes_start = output.find(':') + 2
-        recv_bytes_end = output.find(' ', recv_bytes_start)
-        return int(output[recv_bytes_start:recv_bytes_end])
-
-
-class NetworkTrafficCounterTimerController(CounterTimerController):
-    """This controller provides interface for network packages counting.
-    It counts the number of bytes of data transmitted or received by a network
-    interface over the integration time.
-    """
-
-    ctrl_properties = \
-        {'interface': {Type : str,
-                       Description : 'network interface to count packages',
-                       DefaultValue : 'eno1'},
-        }
+class MiniNetworkPackagesCounterTimerController(CounterTimerController):
+    """ This controller provides interface for network packages counting."""
 
     MaxDevice = 1
 
@@ -52,6 +34,12 @@ class NetworkTrafficCounterTimerController(CounterTimerController):
         self.acq_end_time = time.time()
         self.start_counts = 0
 
+    def AddDevice(self, axis):
+        pass
+
+    def DeleteDevice(self, axis):
+        pass
+
     def LoadOne(self, axis, value):
         self.acq_time = value
 
@@ -59,21 +47,27 @@ class NetworkTrafficCounterTimerController(CounterTimerController):
         state = State.On
         if time.time() < self.acq_end_time:
             state = State.Moving
-        # due to sardana-org/sardana #621 we need to return also status
         status_string = 'My custom status info'
         return state, status_string
 
-    def StartOne(self, axis, _):
+    def StartOne(self, axis, value):
+        self._log.debug("StartOne receives %f" % value)
         self.acq_end_time = time.time() + self.acq_time
-        self.start_counts = read_network_counts(self.interface)
+        self.start_counts = self.read_network_counts()
 
-    # due to sardana-org/sardana #622 we need to implement StartAll
+    def ReadOne(self, axis):
+        counts = self.read_network_counts()
+        return counts - self.start_counts
+
     def StartAll(self):
         pass
 
-    def ReadOne(self, axis):
-        counts = read_network_counts(self.interface)
-        return counts - self.start_counts
-
     def AbortOne(self, axis):
         self.acq_end_time = time.time()
+
+    def read_network_counts(self):
+        with os.popen('cat /proc/net/dev |grep eno1') as fd:
+            output = fd.read()
+            recv_bytes_start = output.find(':') + 2
+            recv_bytes_end = output.find(' ', recv_bytes_start)
+            return int(output[recv_bytes_start:recv_bytes_end])
