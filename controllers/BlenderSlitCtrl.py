@@ -21,7 +21,7 @@ from sardana.pool.controller import PseudoMotorController
 
 class BlenderSlit(PseudoMotorController):
     """A Slit pseudo motor controller for handling gap and offset pseudo
-    motors. The system uses to real motors top and bottom
+    motors. The system uses the real motors top and bottom
     """
 
     pseudo_motor_roles = "gap", "offset"

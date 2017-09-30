@@ -44,8 +44,6 @@ class NetworkTrafficCounterTimerController(CounterTimerController):
                        DefaultValue : 'eno1'},
         }
 
-    MaxDevice = 1
-
     def __init__(self, inst, props, *args, **kwargs):
         CounterTimerController.__init__(self,inst,props, *args, **kwargs)
         self.acq_time = 1.

@@ -122,7 +122,6 @@ class BlenderBladesMotorController(MotorController):
             acc_raw = ans.split()[self.VALUE]
             v = float(acc_raw)
         elif name == "deceleration":
-            # TODO: implement deceleration
             ans = blender_blades.ask("?dec {0}".format(axis_name))
             dec_raw = ans.split()[self.VALUE]
             v = float(dec_raw)
@@ -143,7 +142,6 @@ class BlenderBladesMotorController(MotorController):
         if name == "acceleration":
             blender_blades.ask("acc {0} {1}".format(axis_name, value))
         elif name == "deceleration":
-            # TODO: implement deceleration
             blender_blades.ask("dec {0} {1}".format(axis_name, value))
         elif name == "base_rate":
             raise Exception("base_rate is always 0")
