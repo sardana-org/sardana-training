@@ -1,5 +1,4 @@
-# sardana-training
-Sardana training materials (focused on developers)
+# Sardana training materials (focused on developers)
 
 The aim of the training is to explain the Sardana internals and to review all
 the existing Sardana features.
