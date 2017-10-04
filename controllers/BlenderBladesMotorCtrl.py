@@ -73,7 +73,7 @@ class BlenderBladesMotorController(MotorController):
     # blender blades axis state to sardana motor state map
     STATES = {"ON": State.On, "MOVING": State.Moving}
     # parameter name position in blender blades answer
-    PARAM = 0
+    AXIS_ID = 0
     # parameter value position in blender blades answer
     VALUE = 1
 
