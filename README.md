@@ -7,3 +7,7 @@ directory. The second one is foreseen for the sardana developers or to the
 advanced users. These materials can be found in the `developers` directory.
 Please refer to each of the directorie's README for more details on how to
 follow the training.
+
+
+For visualizing a certain training notebook (e.g macros.ipynb), use:
+**jupyter-nbconvert --to slides --post serve macros.ipynb**
