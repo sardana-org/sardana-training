@@ -9,5 +9,5 @@ Please refer to each of the directorie's README for more details on how to
 follow the training.
 
 
-For visualizing a certain training notebook (e.g macros.ipynb), use:
+For visualizing a certain training notebook (e.g macros.ipynb), use:  
 **jupyter-nbconvert --to slides --post serve macros.ipynb**
