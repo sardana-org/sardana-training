@@ -25,9 +25,8 @@ def read_network_counts(interface):
     cmd = 'cat /proc/net/dev | grep {0}'.format(interface)
     with os.popen(cmd) as fd:
         output = fd.read()
-        recv_bytes_start = output.find(':') + 2
-        recv_bytes_end = output.find(' ', recv_bytes_start)
-        return int(output[recv_bytes_start:recv_bytes_end])
+        bytes_raw = output.split()[1]
+        return int(bytes_raw)
 
 
 class NetworkTrafficCounterTimerController(CounterTimerController):
