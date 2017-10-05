@@ -34,4 +34,25 @@ class NetworkTrafficCounterTimerController(CounterTimerController):
     It counts the number of bytes of data transmitted or received by a network
     interface over the integration time.
     """
-    pass
+    def __init__(self, inst, props, *args, **kwargs):
+        CounterTimerController.__init__(self,inst,props, *args, **kwargs)
+
+    def LoadOne(self, axis, value):
+        pass
+
+    def StateOne(self, axis):
+        # due to sardana-org/sardana #621 we need to return also status
+        pass
+
+    def StartOne(self, axis, _):
+        pass
+
+    # due to sardana-org/sardana #622 we need to implement StartAll
+    def StartAll(self):
+        pass
+
+    def ReadOne(self, axis):
+        pass
+
+    def AbortOne(self, axis):
+        pass

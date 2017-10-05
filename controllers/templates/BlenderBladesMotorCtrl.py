@@ -56,4 +56,34 @@ class BlenderBladesMotorController(MotorController):
     The slit system must be rendered with blender player prior to the init of
     the controller: blenderplayer sardana-training/blender_slits/slits.blend.
     """
-    pass
+        # sardana motor axis to blender blades axis name map
+    AXIS_NAMES = {1: "top", 2: "bot", 3: "left", 4: "right"}
+    # blender blades axis state to sardana motor state map
+    STATES = {"ON": State.On, "MOVING": State.Moving}
+    # parameter name position in blender blades answer
+    AXIS_ID = 0
+    # parameter value position in blender blades answer
+    VALUE = 1
+
+    def __init__(self, inst, props, *args, **kwargs):
+        super_class = super(BlenderBladesMotorController, self)
+        super_class.__init__(inst, props, *args, **kwargs)
+
+    def __del__(self):
+        del self.blender_blades
+
+    def StateOne(self, axis):
+        axis_name = self.AXIS_NAMES[axis]
+        limit_switches = MotorController.NoLimitSwitch  # no limits are active
+        blender_blades = self.blender_blades
+
+    def ReadOne(self, axis):
+        axis_name = self.AXIS_NAMES[axis]
+        blender_blades = self.blender_blades
+
+    def StartOne(self, axis, position):
+        axis_name = self.AXIS_NAMES[axis]
+        blender_blades = self.blender_blades
+
+    def AbortOne(self, axis):
+        blender_blades = self.blender_blades
