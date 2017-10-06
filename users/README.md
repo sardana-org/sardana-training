@@ -16,7 +16,8 @@ We recommend reviewing these materials in the following order:
 7. Macros2
 8. Macros3
 9. Taurusgui
-10. Tauruscore
+10. Tauruscore1
+10. Tauruscore2
 
 See [AGENDA](https://github.com/sardana-org/sardana-training/blob/master/users/AGENDA.md) for more datails on the contents of the training.
 
