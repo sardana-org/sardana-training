@@ -19,9 +19,16 @@ along with Sardana-Training.  If not, see <http://www.gnu.org/licenses/>.
 from sardana import State
 from sardana.macroserver.macro import macro, Type
 
-
+# define macro parameters
 @macro()
-def oscilate(self):
-    """Acquire the active measurement group while oscilating a motor.
+def oscillate(self):
+    """Acquire with the active measurement group while oscillating a motor.
     """
+    # reserve motion and measurement group objects
+    # read current position and prepare positions array
+    # put integration time to the measurement group
+    # start count in the asynchronous way
+    # wait for count
+    # while measurement group is counting move oscillate the motor
+    # increment counter and use modulo operation to alternate position
     pass
