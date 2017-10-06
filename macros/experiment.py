@@ -23,8 +23,8 @@ from sardana.macroserver.macro import macro, Type
 @macro([["motor", Type.Motor, None, "Motor to oscilate"],
         ["amplitude", Type.Float, None, "Oscilation amplitude"],
         ["integ_time", Type.Float, None, "Integration time"]])
-def oscilate(self, motor, amplitude, integ_time):
-    """Acquire the active measurement group while oscilating a motor.
+def oscillate(self, motor, amplitude, integ_time):
+    """Acquire with the active measurement group while oscillating a motor.
     """
     motion = self.getMotion([motor])
     curr_pos = motor.getPosition()
@@ -38,7 +38,6 @@ def oscilate(self, motor, amplitude, integ_time):
     i = 0
     id_ = mnt_grp.startCount()
     while mnt_grp.State() == State.Moving:
-        self.checkPoint()  # place a check point so the loop can be aboerted
         motion.move(positions[i])
         i += 1
         i %= 2
