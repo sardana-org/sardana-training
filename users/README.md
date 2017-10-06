@@ -8,5 +8,6 @@ We recommend reviewing these materials in the following order:
 5. Controllers
 6. Macros1
 7. Macros2
-8. Taurusgui
-9. Tauruscore
+8. Macros3
+9. Taurusgui
+10. Tauruscore
