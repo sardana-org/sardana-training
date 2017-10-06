@@ -27,6 +27,7 @@
 ## Macros (user procedures) - part 1 (12:30 - 13:00)
 * Overview Macroserver
 * Generic Scan Framework
+* Recorders
 
 ## Macros (user procedures) - part 2 (14:00 - 15:30)
 * Macro features
