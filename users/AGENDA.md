@@ -19,19 +19,20 @@
 * Measurement Group
 * Others
 
-## How to controllers (11:30 - 12:30)
+## How to write controllers (11:30 - 12:30)
 * Motor controller on example of Blender Blades
 * Pseudo motor controller on example of Blender Slits
 * Counter timer controller on example of Network Traffic Counter
 
 ## Macros (user procedures) - part 1 (12:30 - 13:00)
 * Overview Macroserver
-* Macro features
-
-## Macros (user procedures) - part 2 (12:30 - 13:00)
 * Generic Scan Framework
-* How to macros - practical
-* How to macros - real use cases
+
+## Macros (user procedures) - part 2 (14:00 - 15:30)
+* Macro features
+* Macro GUI clients
+* How to write macros - practical
+* Macro features - real use cases
 
 ## Coffee break (15:30 - 16:00)
 
