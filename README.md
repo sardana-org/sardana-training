@@ -8,6 +8,8 @@ advanced users. These materials can be found in the `developers` directory.
 Please refer to each of the directorie's README for more details on how to
 follow the training.
 
+**Jupyter Notebook** is needed to visualize and edit the training Slides:
+http://jupyter.org/
 
 For visualizing a certain training notebook (e.g macros.ipynb), use:  
 **jupyter-nbconvert --to slides --post serve macros.ipynb**
