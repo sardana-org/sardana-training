@@ -23,7 +23,8 @@ class Mouse(object):
 
     def __init__(self):
         self.display = display.Display()
-        
+        self.mousepos()
+
     def get_xpos(self):
         self.mousepos()
         return self._X_POS
