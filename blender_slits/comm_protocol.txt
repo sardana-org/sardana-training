@@ -1,3 +1,5 @@
+Communicates via TCP/UP socket on port: 9999.
+
 Motor axes are referenced by the following identifiers:
 * top - top blade
 * bot - bottom blade
