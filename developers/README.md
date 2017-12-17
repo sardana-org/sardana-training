@@ -32,7 +32,7 @@ used during the operations execution.
 
 3. Controllers - demonstrates how to write your own controllers in order to
 access a particular hardware or to achieve a specific calculation result for 
-the pseduo elements. This materials are supported by some examples of 
+the pseudo elements. This materials are supported by some examples of 
 controllers that can be found in the controllers sub-directory.
 
 4. MacroServer - reviews all the macro features and describes the roles of
