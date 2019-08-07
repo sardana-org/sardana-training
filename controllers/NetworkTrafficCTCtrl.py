@@ -37,14 +37,16 @@ class NetworkTrafficCounterTimerController(CounterTimerController):
     interface over the integration time.
     """
 
-    ctrl_properties = \
-        {'interface': {Type : str,
-                       Description : 'network interface to count packages',
-                       DefaultValue : 'eno1'},
-        }
+    default_timer = 1
+
+    ctrl_properties = {
+        'interface': {Type: str,
+                      Description: 'network interface to count packages',
+                      DefaultValue: 'eno1'},
+    }
 
     def __init__(self, inst, props, *args, **kwargs):
-        CounterTimerController.__init__(self,inst,props, *args, **kwargs)
+        CounterTimerController.__init__(self, inst, props, *args, **kwargs)
         self.acq_time = 1.
         self.acq_end_time = time.time()
         self.start_counts = 0
@@ -63,10 +65,6 @@ class NetworkTrafficCounterTimerController(CounterTimerController):
     def StartOne(self, axis, _):
         self.acq_end_time = time.time() + self.acq_time
         self.start_counts = read_network_counts(self.interface)
-
-    # due to sardana-org/sardana #622 we need to implement StartAll
-    def StartAll(self):
-        pass
 
     def ReadOne(self, axis):
         counts = read_network_counts(self.interface)
