@@ -20,6 +20,7 @@ import bge
 import time
 import socket
 import numpy as np
+import h5py
 from PIL import Image
 
 from threading import Thread
@@ -77,6 +78,10 @@ m_left.startMotion(0, -50)
 m_right.startMotion(0, 50)
 
 
+def rgb2gray(rgb):
+    return np.dot(rgb[..., :3], [0.2989, 0.5870, 0.1140])
+
+
 def handle_sock(clientsock, addr):
     global PLAYING
     while PLAYING:
@@ -105,35 +110,16 @@ def handle_sock(clientsock, addr):
 
 
 def det_acq():
-    # SHOULD BE IMPROVED!
-    # IT IS QUITE SLOW...
     det_render = bge.texture.ImageRender(scene, det)
     det_render.flip = True
     # 512x256
     width, height = det_render.size
-    det['im_number'] += 1
-    im_file = 'image-%03d.brw' % det['im_number']
-    det['im_file'] = im_file
-    det['width'] = width
-    det['height'] = height
+    im_file = 'image-%03d.h5' % det['im_number']
     a = np.asarray(det_render.image, dtype=np.uint8)
-    det['im_array'] = a.reshape((width, height, 4))
-    det['im_data'] = det['im_array'].tobytes()
-    with open(im_file, 'wb') as f:
-        f.write(det['im_data'])
-    # THIS FORMAT CAN BE LATER PROCESED BY:
-    # im_array = np.fromfile('filename')
-
-    # SAVE ALSO A SNAPSHOT
-    im = Image.frombytes('RGBA', (width, height), det['im_data'])
-    im.save(im_file.replace('brw', 'png'))
-
-    # SOME IDEAS TO PACK FOR FUTURE SOCKET TRANSFER
-    data = det['im_data']
-    # tdata = struct.pack("L", len(data))
-    # tdata = tdata + struct.pack("H", height)
-    # tdata = tdata + struct.pack("H", width)
-    # tdata = tdata + data
+    print("array len", a.shape)
+    im_array = a.reshape((width, height, 4))
+    h5f = h5py.File(im_file, "w")
+    h5f.create_dataset("img", data=rgb2gray(im_array))
 
 
 def execute_cmd(cmd):
