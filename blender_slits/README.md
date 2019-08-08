@@ -1,3 +1,35 @@
+# Simulator of slits with beam usign Blender
+
+
+## How to play manually with slits?
+ 
+In order to understand the system, I encourage you to execute:
+
+```console
+$ blenderplayer slits_keyboard_only.blend
+```
+
+Now you can use arrows (up/down/left/right) to open horizontal and vertical 
+gaps with the <SHIFT> modifier you will inverse the movement of each blade:
+UP arrow will move TOP blade UP, and <SHIFT>+<UP> will move TOP blade DOWN
+DOWN arrow will move BOTTOM blade DOWN, and <SHIFT>+<DOWN> will move BOTTOM blade UP
+and the same for left and right. You can exit with Q or <Ctrl>+C
+
+
+## How to run a TCP socket server? 
+
+Run in tow terminals:
+
+```console
+$ blenderplayer slits.blend
+```
+
+```console
+ $ python client.py
+```
+
+## Communication protocol
+
 Communicates via TCP/UP socket on port: 9999.
 
 Motor axes are referenced by the following identifiers:
@@ -63,3 +95,7 @@ Commands:
 * Set deceleration of a single axis:
   request: dec <axis id> <deceleration>
   answer: Ready
+
+## Notes
+
+LIGHT IDEAS FROM: http://www.tutorialsforblender3d.com/GameDoc/Shadows/Shadows_3.html
