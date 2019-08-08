@@ -21,14 +21,10 @@ import time
 import socket
 import numpy as np
 import h5py
-from PIL import Image
 
 from threading import Thread
-import math
-import mathutils
 from Motion import Motion
 
-# print('hello')
 scene = bge.logic.getCurrentScene()
 top = scene.objects['b_top']
 bot = scene.objects['b_bot']
@@ -41,12 +37,6 @@ det['im_file'] = 'No_file.brw'
 det['width'] = None
 det['height'] = None
 det['im_array'] = None
-# det_vpw = int(bge.render.getWindowWidth()/4)
-# det_vph = int(bge.render.getWindowHeight()/4)
-# det.setViewport(0, 0, det_vph, det_vpw)
-# det.useViewport = True
-# print('objects ok')
-
 
 # WELL-ALIGNED (GAP 0) POSITIONS ARE:
 # top z=2   (4x2x1)+ROTX90
@@ -280,5 +270,3 @@ while PLAYING:
 
 serversock.shutdown(socket.SHUT_RDWR)
 serversock.close()
-
-# print('shutting down')
