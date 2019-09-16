@@ -50,11 +50,11 @@ pip3 install git+https://github.com/taurus-org/taurus_pyqtgraph.git
 pip3 install --no-deps h5py==2.10  # to have VDS
 
 # TODO: uncomment to install from GitHub instead of local clone
-pip3 install --no-deps git+https://github.com/taurus-org/taurus.git@develop
-# pip3 install --no-deps -e /taurus
+#pip3 install --no-deps git+https://github.com/taurus-org/taurus.git@develop
+pip3 install --no-deps -e /taurus
 # TODO: uncomment to install from GitHub instead of local clone
-pip3 install --no-deps git+https://github.com/sardana-org/sardana.git@develop
-# pip3 install --no-deps -e /sardana
+#pip3 install --no-deps git+https://github.com/sardana-org/sardana.git@develop
+pip3 install --no-deps -e /sardana
 # Change locale from POSIX to C.UTF-8 due to taurus-org/taurus#836
 export LANG=C.UTF-8
 
