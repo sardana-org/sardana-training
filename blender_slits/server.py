@@ -21,6 +21,7 @@ import time
 import socket
 import numpy as np
 import h5py
+from PIL import Image
 
 from threading import Thread
 from Motion import Motion
@@ -56,16 +57,16 @@ motors = {b'top': m_top,
 
 for m in motors.values():
     m.setMinVelocity(0)
-    m.setMaxVelocity(10)
-    m.setAccelerationTime(2)
-    m.setDecelerationTime(2)
+    m.setMaxVelocity(100)
+    m.setAccelerationTime(0.1)
+    m.setDecelerationTime(0.1)
     m.setCurrentPosition(0)
 
 # MOVE TO START POSITION
-m_top.startMotion(0, 50)
+m_top.startMotion(0, 20)
 m_bot.startMotion(0, -50)
 m_left.startMotion(0, -50)
-m_right.startMotion(0, 50)
+m_right.startMotion(0, 20)
 
 
 def rgb2gray(rgb):
@@ -101,15 +102,21 @@ def handle_sock(clientsock, addr):
 
 def det_acq():
     det_render = bge.texture.ImageRender(scene, det)
-    det_render.flip = True
     # 512x256
     width, height = det_render.size
+    print("w: ", width, "h: ", height)
     im_file = 'image-%03d.h5' % det['im_number']
     a = np.asarray(det_render.image, dtype=np.uint8)
-    print("array len", a.shape)
-    im_array = a.reshape((width, height, 4))
+    rgba_array = a.reshape((height, width, 4))
+    print("rgba_array.shape: ", rgba_array.shape)
+    gray_array = rgb2gray(rgba_array)
+    print("gray_array.shape: ", gray_array.shape)
+    print("gray_array_uint8.shape: ", gray_array.astype(np.uint8).shape)
     h5f = h5py.File(im_file, "w")
-    h5f.create_dataset("img", data=rgb2gray(im_array))
+    h5f.create_dataset("img", data=gray_array.astype(np.uint8))
+    det['im_number'] = det['im_number'] + 1
+    im = Image.frombytes('RGBA', (width, height), rgba_array.tobytes())
+    im.save(im_file.replace('h5', 'png'))
 
 
 def execute_cmd(cmd):
