@@ -1,0 +1,1 @@
+{"rsync":{"/vagrant":{"type":"rsync","guestpath":"/vagrant","hostpath":"/home/zreszela/workspace/sardana-followup/20191006-ICALEPCS/sardana-vagrant","disabled":false,"__vagrantfile":true,"owner":"vagrant","group":"vagrant"}}}
