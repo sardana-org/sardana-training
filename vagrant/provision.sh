@@ -15,10 +15,11 @@ apt-get install -y python3-pip \
 apt-get install -y default-mysql-server
 
 #install tango-db
-apt-get install -y tango-db
+apt-get install -y tango-db \
+                   tango-test
 
-# define preferred Qt for qtchooser
-#export QT_SELECT=5
+cp .my.cnf /vagrant
+mysql mysql -e "insert into server (name,host,mode,level) values ('tangotest/test','buster.localdomain',1,1)" tango
 
 # install taurus dependencies
 apt-get install -y python3-numpy \
@@ -49,12 +50,12 @@ apt-get install -y python3-qtconsole \
 pip3 install git+https://github.com/taurus-org/taurus_pyqtgraph.git
 pip3 install --no-deps h5py==2.10  # to have VDS
 
-# TODO: uncomment to install from GitHub instead of local clone
-#pip3 install --no-deps git+https://github.com/taurus-org/taurus.git@develop
-pip3 install --no-deps -e /taurus
-# TODO: uncomment to install from GitHub instead of local clone
-#pip3 install --no-deps git+https://github.com/sardana-org/sardana.git@develop
-pip3 install --no-deps -e /sardana
+
+pip3 install --no-deps git+https://github.com/taurus-org/taurus.git@develop
+cp ./.bash_profile /vagrant
+
+pip3 install --no-deps git+https://github.com/sardana-org/sardana.git@develop
+
 # Change locale from POSIX to C.UTF-8 due to taurus-org/taurus#836
 export LANG=C.UTF-8
 
@@ -64,8 +65,3 @@ apt-get install -y blender \
 
 # install KDE desktop
 apt-get install -y kde-plasma-desktop
-
-# add USER ENV (necessary for spyderlib in taurus.qt.qtgui.editor)
-export USER=root
-
-export TANGO_HOST=sardana-test:10000
