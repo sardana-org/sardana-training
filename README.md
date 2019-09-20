@@ -14,5 +14,16 @@ http://jupyter.org/
 For visualizing a certain training notebook (e.g macros.ipynb), use:  
 **jupyter-nbconvert --to slides --post serve macros.ipynb**
 
+Hint: to increse the font size modify the \*.slides.html file generated
+by nbconvert and add the following line inside of the `<head>`:
+```
+<script>
+    document.querySelector('head').innerHTML += '<style>.slides { zoom: 1.0 !important; }</style>';
+</script>
+```
+More details in: https://github.com/jupyter/nbviewer/issues/533
+
 You can also visualize them online using:
 http://nbviewer.jupyter.org/
+
+
