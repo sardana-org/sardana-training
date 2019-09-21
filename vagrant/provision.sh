@@ -58,9 +58,11 @@ pip3 install git+https://github.com/taurus-org/taurus_pyqtgraph.git
 pip3 install --no-deps h5py==2.10  # to have VDS
 
 
-pip3 install --no-deps git+https://github.com/taurus-org/taurus.git@develop
-cp ./.bash_profile /vagrant
+# TODO: install in user mode with vagrant user
+pip3 install --user --no-deps git+https://github.com/taurus-org/taurus.git@develop
+echo "export QT_API=pyqt5" >> /home/vagrant/.bashrc
 
+# TODO: install in user mode with vagrant user
 pip3 install --no-deps git+https://github.com/sardana-org/sardana.git@develop
 
 # Change locale from POSIX to C.UTF-8 due to taurus-org/taurus#836
@@ -69,6 +71,9 @@ export LANG=C.UTF-8
 # install tools used in the training
 apt-get install -y blender \
                    wget
+
+# configure PATH to point to pip user installation dir 
+echo "export PATH=/home/vagrant/.local/bin:$PATH" >> /home/vagrant/.bashrc
 
 # install KDE desktop
 apt-get install -y kde-plasma-desktop
