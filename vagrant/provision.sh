@@ -16,10 +16,18 @@ apt-get install -y default-mysql-server
 
 #install tango-db
 apt-get install -y tango-db \
-                   tango-test
-
-cp .my.cnf /vagrant
-mysql mysql -e "insert into server (name,host,mode,level) values ('tangotest/test','buster.localdomain',1,1)" tango
+                   tango-test \
+                   python3-tango
+#python3 -c "from tango import Database, DbServerInfo; \
+#            serv_info = DbServerInfo(); \
+#            serv_info.name = 'tangotest/test'; \
+#            serv_info.host = 'buster.localdomain'; \
+#            serv_info.mode = 1; \
+#            serv_info.level = 1; \
+#            Database().put_server_info(serv_info);"
+#python3 -c "from tango import DeviceProxy; \
+#            starter = DeviceProxy('tango/admin/buster'); \
+#            starter.DevStartAll(1);"
 
 # install taurus dependencies
 apt-get install -y python3-numpy \
@@ -31,7 +39,6 @@ apt-get install -y python3-numpy \
                    python3-pint \
                    python3-future \
                    python3-ply \
-                   python3-pytango \
                    python3-spyderlib \
                    python3-pymca5 \
                    qttools5-dev-tools \
