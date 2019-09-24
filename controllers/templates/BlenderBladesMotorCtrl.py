@@ -18,6 +18,7 @@ along with Sardana-Training.  If not, see <http://www.gnu.org/licenses/>.
 
 import socket
 
+from sardana import State
 from sardana.pool.controller import MotorController
 
 
@@ -40,11 +41,11 @@ class BlenderBlades(object):
     def ask(self, command):
         command = "{0}\n".format(command)
         try:
-            self._socket.sendall(command)
+            self._socket.sendall(command.encode())
             raw_data = self._socket.recv(4096)
         except:
             raise CommunicationError("send/recv failed")
-        data = raw_data.split()
+        data = raw_data.decode().split()
         ans = " ".join(data[self.ANS_START:])
         return ans
 
