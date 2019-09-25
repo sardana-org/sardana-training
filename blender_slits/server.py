@@ -279,6 +279,13 @@ try:
         ts = Thread(target=handle_sock, args=(clientsock, addr))
         ts.daemon = True
         ts.start()
+except KeyboardInterrupt:
+    PLAYING = False
+    print('Ctrl-C pressed. Bailing out!')
 finally:
     serversock.shutdown(socket.SHUT_RDWR)
     serversock.close()
+
+tk.join()
+tm.join()
+tup.join()
