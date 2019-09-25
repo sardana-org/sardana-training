@@ -260,20 +260,25 @@ serversock.bind(('127.0.0.1', 9999))
 serversock.listen(1)
 
 tk = Thread(target=handle_keyboard, args=())
+tk.daemon = True
 tk.start()
 tm = Thread(target=handle_mouse, args=())
+tm.daemon = True
 tm.start()
 tup = Thread(target=update_positions, args=())
+tup.daemon = True
 tup.start()
 
 print("Exit with Ctrl+C.")
-while PLAYING:
-    bge.logic.NextFrame()
-    print("Waiting for connection...")
-    clientsock, addr = serversock.accept()
-    print('...connected from:', addr)
-    ts = Thread(target=handle_sock, args=(clientsock, addr))
-    ts.start()
-
-serversock.shutdown(socket.SHUT_RDWR)
-serversock.close()
+try:
+    while PLAYING:
+        bge.logic.NextFrame()
+        print("Waiting for connection...")
+        clientsock, addr = serversock.accept()
+        print('...connected from:', addr)
+        ts = Thread(target=handle_sock, args=(clientsock, addr))
+        ts.daemon = True
+        ts.start()
+finally:
+    serversock.shutdown(socket.SHUT_RDWR)
+    serversock.close()
