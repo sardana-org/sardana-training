@@ -70,6 +70,8 @@ class Acquisition:
         self.detector.log.info('Finished acquisition')
 
     def _acquire(self, data, width, height):
+        detector = self.detector
+        log = detector.log
         self.start_time = time.time()
         self.status = 'Acquiring'
         time.sleep(self.exposure_time)
@@ -78,22 +80,27 @@ class Acquisition:
         start = time.time()
         rgba_array = data.reshape((height, width, 4))
         gray_array = rgb2gray(rgba_array)
-        self.detector.last_image_acquired = gray_array
-        self.detector.log.info('Readout time: %fs', time.time() - start)
+        detector.last_image_acquired = gray_array
+        log.info('Readout time: %fs', time.time() - start)
         if self.saving_directory and self.image_name:
             self.status = 'Saving'
-            image_nb = self.detector.next_image_number()
+            image_nb = detector.next_image_number()
             image_name = self.image_name.format(image_nb=image_nb)
             image_path = pathlib.Path(self.saving_directory, image_name)
-            start = time.time()
-            h5f = h5py.File(image_path.with_suffix('.h5'), "w")
-            h5f.create_dataset("img", data=gray_array.astype(np.uint8))
-            self.detector.log.info('HDF5 save time: %fs', time.time() - start)
-            start = time.time()
-            im = Image.fromarray(rgba_array, 'RGBA')
-            im.save(image_path.with_suffix('.png'))
-            self.detector.log.info('PNG save time: %fs', time.time() - start)
-            self.detector.last_image_file_name = image_path.with_suffix('.h5')
+            if image_path.suffix == '.h5':
+                start = time.time()
+                h5f = h5py.File(image_path.with_suffix('.h5'), "w")
+                h5f.create_dataset("img", data=gray_array.astype(np.uint8))
+                log.info('HDF5 save time: %fs', time.time() - start)
+                detector.last_image_file_name = image_path
+            elif image_path.suffix == '.png':
+                start = time.time()
+                im = Image.fromarray(rgba_array, 'RGBA')
+                im.save(image_path.with_suffix('.png'))
+                log.info('PNG save time: %fs', time.time() - start)
+                detector.last_image_file_name = image_path
+            else:
+                log.warning('Unknown saving extension %r. File not saved', image_path.suffix)
         self.end_time = time.time()
         self.status = 'Ready'
 
