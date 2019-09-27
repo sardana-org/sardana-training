@@ -17,8 +17,12 @@ along with Sardana-Training.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import bge
+import os
 import time
 import socket
+import logging
+import pathlib
+import itertools
 import numpy as np
 import h5py
 from PIL import Image
@@ -32,12 +36,143 @@ bot = scene.objects['b_bot']
 left = scene.objects['b_left']
 right = scene.objects['b_right']
 cam = scene.objects['Camera']
-det = scene.objects['Detector']
-det['im_number'] = 0
-det['im_file'] = 'No_file.brw'
-det['width'] = None
-det['height'] = None
-det['im_array'] = None
+
+
+log = logging.getLogger('server')
+
+
+class Acquisition:
+
+    def __init__(self, detector, exposure_time, nb_frames,
+                 saving_directory, image_name):
+        self.detector = detector
+        self.exposure_time = exposure_time
+        self.saving_directory = saving_directory
+        self.image_name = image_name
+        self.status = 'Ready'
+        self.start_time = None
+        self.end_time = None
+        self.task = None
+        self.stopped = False
+        self.images = []
+
+    def prepare(self):
+        if self.saving_directory:
+            os.makedirs(self.saving_directory, exist_ok=True)
+
+    def acquire(self, data, width, height):
+        self.detector.log.info(
+            'start acquisition exposure_time=%ss', self.exposure_time)
+        try:
+            self._acquire(data, width, height)
+        finally:
+            self.status = 'Ready'
+        self.detector.log.info('Finished acquisition')
+
+    def _acquire(self, data, width, height):
+        detector = self.detector
+        log = detector.log
+        self.start_time = time.time()
+        self.status = 'Acquiring'
+        time.sleep(self.exposure_time)
+        self.status = 'Readout'
+        # 512x256
+        start = time.time()
+        rgba_array = data.reshape((height, width, 4))
+        gray_array = rgb2gray(rgba_array)
+        detector.last_image_acquired = gray_array
+        log.info('Readout time: %fs', time.time() - start)
+        if self.saving_directory and self.image_name:
+            self.status = 'Saving'
+            image_nb = detector.next_image_number()
+            image_name = self.image_name.format(image_nb=image_nb)
+            image_path = pathlib.Path(self.saving_directory, image_name)
+            if image_path.suffix == '.h5':
+                start = time.time()
+                h5f = h5py.File(image_path.with_suffix('.h5'), "w")
+                h5f.create_dataset("img", data=gray_array.astype(np.uint8))
+                log.info('HDF5 save time: %fs', time.time() - start)
+                detector.last_image_file_name = image_path
+            elif image_path.suffix == '.png':
+                start = time.time()
+                im = Image.fromarray(rgba_array, 'RGBA')
+                im.save(image_path.with_suffix('.png'))
+                log.info('PNG save time: %fs', time.time() - start)
+                detector.last_image_file_name = image_path
+            else:
+                log.warning('Unknown saving extension %r. File not saved', image_path.suffix)
+        self.end_time = time.time()
+        self.status = 'Ready'
+
+    def start(self):
+        if self.task is not None:
+            raise RuntimeError('Cannot start same acquisition twice')
+        self.status = 'Acquiring'
+        #print(1, self.status)
+        # big hack: need to get hold of the frame data before NextFrame() is called
+        # essencially we cannot do more than one frame :-(
+        start = time.time()
+        canvas = self.detector.render()
+        self.detector.log.info('Render time: %fs', time.time() - start)
+        data = np.asarray(canvas.image, dtype=np.uint8)
+        width, height = canvas.size
+        self.task = Thread(target=self.acquire, args=(data, width, height))
+        self.task.start()
+
+    def wait(self):
+        self.task.join()
+
+
+class Detector:
+
+    def __init__(self, scene, name):
+        self.scene = scene
+        self.name = name
+        self.exposure_time = 1.0
+        self.nb_frames = 1
+        self.image_counter = itertools.count()
+        self.acq = None
+        self.image_name = 'image-{image_nb:03d}'
+        self.last_image_file_name = ''
+        self.last_image_acquired = None
+        self.saving_directory = ''
+        self.log = logging.getLogger(name)
+
+    def render(self):
+        return bge.texture.ImageRender(self.scene, self.obj)
+
+    def next_image_number(self):
+        return next(self.image_counter)
+
+    @property
+    def obj(self):
+        return self.scene.objects[self.name]
+
+    @property
+    def acq_status(self):
+        return 'Ready' if self.acq is None else self.acq.status
+
+    def prepare_acquisition(self):
+        self.acq = Acquisition(self, self.exposure_time, self.nb_frames,
+                               self.saving_directory, self.image_name)
+        self.acq.prepare()
+
+    def start_acquisition(self):
+        acq = self.acq
+        if acq is None:
+            raise RuntimeError('Need to call prepare first!')
+        if acq.status != 'Ready':
+            raise RuntimeError('Previous acquisition not finished yet!')
+        acq.start()
+
+    def stop_acquisition(self, wait=False):
+        acq = self.acq
+        if acq:
+            acq.stopped = True
+            if wait:
+                self.acq.wait()
+
+detector = Detector(scene, 'Detector')
 
 # WELL-ALIGNED (GAP 0) POSITIONS ARE:
 # top z=2   (4x2x1)+ROTX90
@@ -75,48 +210,48 @@ def rgb2gray(rgb):
 
 def handle_sock(clientsock, addr):
     global PLAYING
+    log.info('client at %r connected', addr)
+
     while PLAYING:
         try:
             bge.logic.NextFrame()
             data = clientsock.recv(4096)
             cmd = data.lower().strip()
-            if not data: break
+            if not data:
+                log.info('client at %r disconnected', addr)
+                return
             if cmd == b'q':
+                log.info('client at %r quit', addr)
                 clientsock.close()
                 return
             try:
                 ans = execute_cmd(cmd)
                 if ans is None:
                     ans = 'Ready\n'
-                clientsock.sendall(ans.encode('utf-8'))
-                debugline = 'cmd: '
-                debugline += cmd.decode('utf-8')
-                debugline += '  ->  '
-                debugline += ans[:-1]
-                print(debugline)
+                if not isinstance(ans, bytes):
+                    ans = ans.encode()
+                clientsock.sendall(ans)
+                log.info('cmd: %r -> %r', cmd, ans[:20])
             except Exception as e:
-                print(str(e))
+                log.exception('Error running %r', cmd)
         except:
             pass
 
 
-def det_acq():
-    det_render = bge.texture.ImageRender(scene, det)
-    # 512x256
-    width, height = det_render.size
-    print("w: ", width, "h: ", height)
-    im_file = 'image-%03d.h5' % det['im_number']
-    a = np.asarray(det_render.image, dtype=np.uint8)
-    rgba_array = a.reshape((height, width, 4))
-    print("rgba_array.shape: ", rgba_array.shape)
-    gray_array = rgb2gray(rgba_array)
-    print("gray_array.shape: ", gray_array.shape)
-    print("gray_array_uint8.shape: ", gray_array.astype(np.uint8).shape)
-    h5f = h5py.File(im_file, "w")
-    h5f.create_dataset("img", data=gray_array.astype(np.uint8))
-    det['im_number'] = det['im_number'] + 1
-    im = Image.frombytes('RGBA', (width, height), rgba_array.tobytes())
-    im.save(im_file.replace('h5', 'png'))
+def prepare_acq():
+    try:
+        detector.prepare_acquisition()
+        return 'OK\n'
+    except Exception as err:
+        return 'ERROR: {}\n'.format(err)
+
+
+def start_acq():
+    try:
+        detector.start_acquisition()
+        return 'OK\n'
+    except Exception as err:
+        return 'ERROR: {}\n'.format(err)
 
 
 def execute_cmd(cmd):
@@ -188,54 +323,48 @@ def execute_cmd(cmd):
         ans = ' '.join(states)
         return ans + '\n'
 
-    if cmd.startswith(b'acq'):
-        det_acq()
+    if cmd == b'?acq_image':
+        data = detector.last_image_acquired
+        import pickle
+        data = pickle.dumps(data)
+        size = len(data)
+        return '{:08d}'.format(size).encode() + data
 
-    if cmd.startswith(b'?acq_im_number'):
-        ans = 'acq_im_number %d' % det['im_number']
-        return ans + '\n'
+    if cmd.startswith(b'?acq_exposure_time'):
+        return 'acq_exposure_time {}\n'.format(detector.exposure_time)
 
-    if cmd.startswith(b'?acq_im_file'):
-        ans = 'acq_im_file %s' % det['im_file']
-        return ans + '\n'
+    if cmd.startswith(b'?acq_nb_frames'):
+        return 'acq_nb_frames {}\n'.format(detector.nb_frames)
 
+    if cmd.startswith(b'?acq_saving_directory'):
+        return 'acq_saving_directory {}\n'.format(detector.saving_directory)
 
-def handle_keyboard():
-    global PLAYING
-    keyboard = bge.logic.keyboard
-    while PLAYING:
-        try:
-            bge.logic.NextFrame()
-            if keyboard.events[bge.events.LEFTARROWKEY] != 0:
-                cam.applyMovement([-0.1, 0, 0], True)
-            elif keyboard.events[bge.events.RIGHTARROWKEY] != 0:
-                cam.applyMovement([0.1, 0, 0], True)
-            elif keyboard.events[bge.events.UPARROWKEY] != 0:
-                cam.applyMovement([0, 0.1, 0], True)
-            elif keyboard.events[bge.events.DOWNARROWKEY] != 0:
-                cam.applyMovement([0, -0.1, 0], True)
-            time.sleep(.01)
-        except:
-            pass
+    if cmd.startswith(b'?acq_image_name'):
+        return 'acq_image_name {}\n'.format(detector.image_name)
 
+    if cmd.startswith(b'?acq_status'):
+        return 'acq_status {}\n'.format(detector.acq_status)
 
-def handle_mouse():
-    global PLAYING
-    mouse = bge.logic.mouse
-    while PLAYING:
-        try:
-            bge.logic.NextFrame()
-            if mouse.events[bge.events.WHEELUPMOUSE] != 0:
-                cam.lens += 5
-            elif mouse.events[bge.events.WHEELDOWNMOUSE] != 0:
-                cam.lens -= 5
-            elif mouse.events[bge.events.LEFTMOUSE] != 0:
-                cam.applyRotation([0, 0.01, 0], True)
-            elif mouse.events[bge.events.RIGHTMOUSE] != 0:
-                cam.applyRotation([0, -0.01, 0], True)
-            time.sleep(.01)
-        except:
-            pass
+    if cmd.startswith(b'?acq_last_image_file_name'):
+        return 'acq_last_image_file_name {}\n'.format(detector.last_image_file_name)
+
+    if cmd.startswith(b'acq_exposure_time'):
+        detector.exposure_time = float(cmd.split()[1])
+
+    if cmd.startswith(b'acq_nb_frames'):
+        detector.nb_frames = int(cmd.split()[1])
+
+    if cmd.startswith(b'acq_saving_directory'):
+        detector.saving_directory = cmd.split()[1].decode()
+
+    if cmd.startswith(b'acq_image_name'):
+        detector.image_name = cmd.split()[1].decode()
+
+    if cmd.startswith(b'acq_prepare'):
+        return prepare_acq()
+
+    if cmd.startswith(b'acq_start'):
+        return start_acq()
 
 
 def update_positions():
@@ -253,27 +382,33 @@ def update_positions():
         # CONFIGURE TCP SERVER
 
 
+fmt = '%(threadName)-10s %(asctime)-15s %(levelname)-5s %(name)s: %(message)s'
+logging.basicConfig(level=logging.INFO, format=fmt)
 PLAYING = True
 serversock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serversock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 serversock.bind(('127.0.0.1', 9999))
 serversock.listen(1)
 
-tk = Thread(target=handle_keyboard, args=())
-tk.start()
-tm = Thread(target=handle_mouse, args=())
-tm.start()
 tup = Thread(target=update_positions, args=())
+tup.daemon = True
 tup.start()
 
-print("Exit with Ctrl+C.")
-while PLAYING:
-    bge.logic.NextFrame()
-    print("Waiting for connection...")
-    clientsock, addr = serversock.accept()
-    print('...connected from:', addr)
-    ts = Thread(target=handle_sock, args=(clientsock, addr))
-    ts.start()
+log.info("Ready to accept requests!")
+log.info("Exit with Ctrl-C.")
+try:
+    while PLAYING:
+        bge.logic.NextFrame()
+        clientsock, addr = serversock.accept()
+        ts = Thread(target=handle_sock, args=(clientsock, addr))
+        ts.daemon = True
+        ts.start()
+except KeyboardInterrupt:
+    PLAYING = False
+    log.info('Ctrl-C pressed. Bailing out!')
+finally:
+    serversock.shutdown(socket.SHUT_RDWR)
+    serversock.close()
 
-serversock.shutdown(socket.SHUT_RDWR)
-serversock.close()
+tup.join()
+exit(0)
