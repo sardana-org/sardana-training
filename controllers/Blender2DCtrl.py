@@ -1,5 +1,5 @@
+import pickle
 import socket
-import select
 
 from sardana import State
 from sardana.pool.controller import (TwoDController, Referable, Type,
@@ -22,11 +22,8 @@ class BlenderDetector:
 
     def ask(self, command):
         command = "{0}\n".format(command)
-        try:
-            self._socket.sendall(command.encode())
-            return self._socket.recv(4096).decode().strip()
-        except:
-            raise CommunicationError("send/recv failed")
+        self._socket.sendall(command.encode())
+        return self._socket.recv(4096).decode().strip()
 
     def prepare_acquisition(self):
         r = self.ask('acq_prepare')
@@ -39,7 +36,7 @@ class BlenderDetector:
             raise BlenderDetectorError(r.split(' ', 1)[1])
 
     def stop_acquisition(self):
-        r = self.ask('start_acq')
+        r = self.ask('acq_stop')
         assert 'OK' in r
 
     @property
@@ -75,18 +72,29 @@ class BlenderDetector:
         self.ask('acq_saving_directory {}'.format(directory))
 
     @property
-    def image_format(self):
-        r = self.ask('?acq_image_format')
+    def image_name(self):
+        r = self.ask('?acq_image_name')
         return r.partition(' ')[-1]
 
-    @image_format.setter
-    def image_format(self, fmt):
-        self.ask('acq_image_format {}'.format(fmt))
+    @image_name.setter
+    def image_name(self, fmt):
+        self.ask('acq_image_name {}'.format(fmt))
 
     @property
     def last_image_file_name(self):
         r = self.ask('?acq_last_image_file_name')
         return r.partition(' ')[-1]
+
+    @property
+    def last_image(self):
+        self._socket.sendall(b'?acq_image\n')
+        size = int(self._socket.recv(8))
+        data, n = [], 0
+        while n < size:
+            buff = self._socket.recv(4096)
+            n += len(buff)
+            data.append(buff)
+        return pickle.loads(b''.join(data))
 
 
 class Blender2DController(TwoDController, Referable):
@@ -106,6 +114,8 @@ class Blender2DController(TwoDController, Referable):
     def __init__(self, inst, props, *args, **kwargs):
         super().__init__(inst, props, *args, **kwargs)
         self.detector = BlenderDetector(self.Host, self.Port)
+        self.value_ref_pattern = ''
+        self.value_ref_enabled = True
 
     def StateOne(self, axis):
         status = self.detector.acq_status
@@ -121,15 +131,12 @@ class Blender2DController(TwoDController, Referable):
         self.detector.prepare_acquisition()
 
     def StartOne(self, axis, value):
-        print('START ONE', axis, value)
-        try:
-            self.detector.start_acquisition()
-        except Exception as err:
-            print('Error in START ONE', err)
-            raise
+        self.detector.start_acquisition()
 
     def ReadOne(self, axis):
-        pass
+        data = self.detector.last_image
+        print(type(data), data)
+        return data
 
     def AbortOne(self, axis):
         self.detector.stop_acquisition()
@@ -143,6 +150,13 @@ class Blender2DController(TwoDController, Referable):
             path, fpattern = value.rsplit('/', 1)
             path = path.replace('file://', '')
             self.detector.saving_directory = path
-            self.detector.image_format = fpattern
+            self.detector.image_name = fpattern
+            self.value_ref_pattern = value
+        elif parameter == 'value_ref_enabled':
+            self.value_ref_enabled = value
 
-
+    def GetAxisPar(self, axis, parameter):
+        if parameter == 'value_ref_pattern':
+            return self.value_ref_pattern
+        elif parameter == 'value_ref_enabled':
+            return self.value_ref_enabled

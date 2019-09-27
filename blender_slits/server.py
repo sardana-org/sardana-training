@@ -38,15 +38,17 @@ right = scene.objects['b_right']
 cam = scene.objects['Camera']
 
 
+log = logging.getLogger('server')
+
+
 class Acquisition:
 
     def __init__(self, detector, exposure_time, nb_frames,
-                 saving_directory, image_format):
+                 saving_directory, image_name):
         self.detector = detector
         self.exposure_time = exposure_time
-        self.nb_frames = nb_frames
         self.saving_directory = saving_directory
-        self.image_format = image_format
+        self.image_name = image_name
         self.status = 'Ready'
         self.start_time = None
         self.end_time = None
@@ -58,51 +60,54 @@ class Acquisition:
         if self.saving_directory:
             os.makedirs(self.saving_directory, exist_ok=True)
 
-    def acquire(self):
+    def acquire(self, data, width, height):
         self.detector.log.info(
-            'start acquisition nb_frames=%s exposure_time=%ss',
-            self.nb_frames, self.exposure_time)
+            'start acquisition exposure_time=%ss', self.exposure_time)
         try:
-            self._acquire()
+            self._acquire(data, width, height)
         finally:
             self.status = 'Ready'
         self.detector.log.info('Finished acquisition')
 
-    def _acquire(self):
+    def _acquire(self, data, width, height):
         self.start_time = time.time()
-        for frame in range(self.nb_frames):
-            if self.stopped:
-                break
-            self.status = 'Acquiring #{}'.format(frame)
-            det_render = self.detector.render()
-            end = time.time()
-            nap = self.exposure_time - (end - self.start_time)
-            if nap > 0:
-                time.sleep(nap)
-            self.status = 'Readout #{}'.format(frame)
-            # 512x256
-            width, height = det_render.size
-            image = det_render.image
-            a = np.asarray(image, dtype=np.uint8)
-            rgba_array = a.reshape((height, width, 4))
-            gray_array = rgb2gray(rgba_array)
-            im = Image.frombytes('RGBA', (width, height), rgba_array.tobytes())
-            if self.saving_directory and self.image_format:
-                self.status = 'Saving #{}'.format(frame)
-                image_nb = self.detector.next_image_number()
-                image_name = self.image_format.format(image_nb=image_nb)
-                image_path = pathlib.Path(self.saving_directory, image_name)
-                h5f = h5py.File(image_path.with_suffix('.h5'), "w")
-                h5f.create_dataset("img", data=gray_array.astype(np.uint8))
-                im.save(image_path.with_suffix('.png'))
-                self.detector.last_image_file_name = image_path.with_suffix('.h5')
+        self.status = 'Acquiring'
+        time.sleep(self.exposure_time)
+        self.status = 'Readout'
+        # 512x256
+        start = time.time()
+        rgba_array = data.reshape((height, width, 4))
+        gray_array = rgb2gray(rgba_array)
+        self.detector.last_image_acquired = gray_array
+        self.detector.log.info('Readout time: %fs', time.time() - start)
+        if self.saving_directory and self.image_name:
+            self.status = 'Saving'
+            image_nb = self.detector.next_image_number()
+            image_name = self.image_name.format(image_nb=image_nb)
+            image_path = pathlib.Path(self.saving_directory, image_name)
+            start = time.time()
+            h5f = h5py.File(image_path.with_suffix('.h5'), "w")
+            h5f.create_dataset("img", data=gray_array.astype(np.uint8))
+            self.detector.log.info('HDF5 save time: %fs', time.time() - start)
+            start = time.time()
+            im = Image.fromarray(rgba_array, 'RGBA')
+            im.save(image_path.with_suffix('.png'))
+            self.detector.log.info('PNG save time: %fs', time.time() - start)
+            self.detector.last_image_file_name = image_path.with_suffix('.h5')
         self.end_time = time.time()
         self.status = 'Ready'
 
     def start(self):
         if self.task is not None:
             raise RuntimeError('Cannot start same acquisition twice')
-        self.task = Thread(target=self.acquire)
+        self.status = 'Acquiring'
+        #print(1, self.status)
+        # big hack: need to get hold of the frame data before NextFrame() is called
+        # essencially we cannot do more than one frame :-(
+        canvas = self.detector.render()
+        data = np.asarray(canvas.image, dtype=np.uint8)
+        width, height = canvas.size
+        self.task = Thread(target=self.acquire, args=(data, width, height))
         self.task.start()
 
     def wait(self):
@@ -118,8 +123,9 @@ class Detector:
         self.nb_frames = 1
         self.image_counter = itertools.count()
         self.acq = None
-        self.image_format = 'image-{image_nb:03d}'
+        self.image_name = 'image-{image_nb:03d}'
         self.last_image_file_name = ''
+        self.last_image_acquired = None
         self.saving_directory = ''
         self.log = logging.getLogger(name)
 
@@ -139,13 +145,16 @@ class Detector:
 
     def prepare_acquisition(self):
         self.acq = Acquisition(self, self.exposure_time, self.nb_frames,
-                               self.saving_directory, self.image_format)
+                               self.saving_directory, self.image_name)
         self.acq.prepare()
 
     def start_acquisition(self):
-        if self.acq_status != 'Ready':
+        acq = self.acq
+        if acq is None:
+            raise RuntimeError('Need to call prepare first!')
+        if acq.status != 'Ready':
             raise RuntimeError('Previous acquisition not finished yet!')
-        self.acq.start()
+        acq.start()
 
     def stop_acquisition(self, wait=False):
         acq = self.acq
@@ -192,27 +201,30 @@ def rgb2gray(rgb):
 
 def handle_sock(clientsock, addr):
     global PLAYING
+    log.info('client at %r connected', addr)
+
     while PLAYING:
         try:
             bge.logic.NextFrame()
             data = clientsock.recv(4096)
             cmd = data.lower().strip()
-            if not data: break
+            if not data:
+                log.info('client at %r disconnected', addr)
+                return
             if cmd == b'q':
+                log.info('client at %r quit', addr)
                 clientsock.close()
                 return
             try:
                 ans = execute_cmd(cmd)
                 if ans is None:
                     ans = 'Ready\n'
-                clientsock.sendall(ans.encode('utf-8'))
-                debugline = 'cmd: '
-                debugline += cmd.decode('utf-8')
-                debugline += '  ->  '
-                debugline += ans[:-1]
-                print(debugline)
+                if not isinstance(ans, bytes):
+                    ans = ans.encode()
+                clientsock.sendall(ans)
+                log.info('cmd: %r -> %r', cmd, ans[:20])
             except Exception as e:
-                print(str(e))
+                log.exception('Error running %r', cmd)
         except:
             pass
 
@@ -302,6 +314,13 @@ def execute_cmd(cmd):
         ans = ' '.join(states)
         return ans + '\n'
 
+    if cmd == b'?acq_image':
+        data = detector.last_image_acquired
+        import pickle
+        data = pickle.dumps(data)
+        size = len(data)
+        return '{:08d}'.format(size).encode() + data
+
     if cmd.startswith(b'?acq_exposure_time'):
         return 'acq_exposure_time {}\n'.format(detector.exposure_time)
 
@@ -311,8 +330,8 @@ def execute_cmd(cmd):
     if cmd.startswith(b'?acq_saving_directory'):
         return 'acq_saving_directory {}\n'.format(detector.saving_directory)
 
-    if cmd.startswith(b'?acq_image_format'):
-        return 'acq_image_format {}\n'.format(detector.image_format)
+    if cmd.startswith(b'?acq_image_name'):
+        return 'acq_image_name {}\n'.format(detector.image_name)
 
     if cmd.startswith(b'?acq_status'):
         return 'acq_status {}\n'.format(detector.acq_status)
@@ -329,52 +348,14 @@ def execute_cmd(cmd):
     if cmd.startswith(b'acq_saving_directory'):
         detector.saving_directory = cmd.split()[1].decode()
 
-    if cmd.startswith(b'acq_image_format'):
-        detector.image_format = cmd.split()[1].decode()
+    if cmd.startswith(b'acq_image_name'):
+        detector.image_name = cmd.split()[1].decode()
 
     if cmd.startswith(b'acq_prepare'):
         return prepare_acq()
 
     if cmd.startswith(b'acq_start'):
         return start_acq()
-
-
-def handle_keyboard():
-    global PLAYING
-    keyboard = bge.logic.keyboard
-    while PLAYING:
-        try:
-            bge.logic.NextFrame()
-            if keyboard.events[bge.events.LEFTARROWKEY] != 0:
-                cam.applyMovement([-0.1, 0, 0], True)
-            elif keyboard.events[bge.events.RIGHTARROWKEY] != 0:
-                cam.applyMovement([0.1, 0, 0], True)
-            elif keyboard.events[bge.events.UPARROWKEY] != 0:
-                cam.applyMovement([0, 0.1, 0], True)
-            elif keyboard.events[bge.events.DOWNARROWKEY] != 0:
-                cam.applyMovement([0, -0.1, 0], True)
-            time.sleep(.01)
-        except:
-            pass
-
-
-def handle_mouse():
-    global PLAYING
-    mouse = bge.logic.mouse
-    while PLAYING:
-        try:
-            bge.logic.NextFrame()
-            if mouse.events[bge.events.WHEELUPMOUSE] != 0:
-                cam.lens += 5
-            elif mouse.events[bge.events.WHEELDOWNMOUSE] != 0:
-                cam.lens -= 5
-            elif mouse.events[bge.events.LEFTMOUSE] != 0:
-                cam.applyRotation([0, 0.01, 0], True)
-            elif mouse.events[bge.events.RIGHTMOUSE] != 0:
-                cam.applyRotation([0, -0.01, 0], True)
-            time.sleep(.01)
-        except:
-            pass
 
 
 def update_positions():
@@ -392,40 +373,33 @@ def update_positions():
         # CONFIGURE TCP SERVER
 
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)-15s %(levelname)-5s %(name)s: %(message)s')
+fmt = '%(threadName)-10s %(asctime)-15s %(levelname)-5s %(name)s: %(message)s'
+logging.basicConfig(level=logging.INFO, format=fmt)
 PLAYING = True
 serversock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serversock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 serversock.bind(('127.0.0.1', 9999))
 serversock.listen(1)
 
-tk = Thread(target=handle_keyboard, args=())
-tk.daemon = True
-tk.start()
-tm = Thread(target=handle_mouse, args=())
-tm.daemon = True
-tm.start()
 tup = Thread(target=update_positions, args=())
 tup.daemon = True
 tup.start()
 
-print("Exit with Ctrl+C.")
+log.info("Ready to accept requests!")
+log.info("Exit with Ctrl-C.")
 try:
     while PLAYING:
         bge.logic.NextFrame()
-        print("Waiting for connection...")
         clientsock, addr = serversock.accept()
-        print('...connected from:', addr)
         ts = Thread(target=handle_sock, args=(clientsock, addr))
         ts.daemon = True
         ts.start()
 except KeyboardInterrupt:
     PLAYING = False
-    print('Ctrl-C pressed. Bailing out!')
+    log.info('Ctrl-C pressed. Bailing out!')
 finally:
     serversock.shutdown(socket.SHUT_RDWR)
     serversock.close()
 
-tk.join()
-tm.join()
 tup.join()
+exit(0)
