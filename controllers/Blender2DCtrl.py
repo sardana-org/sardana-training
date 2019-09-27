@@ -1,5 +1,6 @@
 import pickle
 import socket
+from urllib.parse import urlparse
 
 from sardana import State
 from sardana.pool.controller import (TwoDController, Referable, Type,
@@ -143,12 +144,15 @@ class Blender2DController(TwoDController, Referable):
 
     def RefOne(self, axis):
         name = self.detector.last_image_file_name
-        return 'file://{}'.format(name) if name else ''
+        if not name:
+            return ''
+        scheme = urlparse(self.value_ref_pattern).scheme
+        return '{}://{}::img'.format(scheme, name)
 
     def SetAxisPar(self, axis, parameter, value):
         if parameter == "value_ref_pattern":
-            path, fpattern = value.rsplit('/', 1)
-            path = path.replace('file://', '')
+            url = urlparse(value)
+            path, fpattern = url.path.rsplit('/', 1)
             self.detector.saving_directory = path
             self.detector.image_name = fpattern
             self.value_ref_pattern = value
