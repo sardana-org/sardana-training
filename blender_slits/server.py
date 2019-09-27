@@ -28,7 +28,9 @@ import h5py
 from PIL import Image
 
 from threading import Thread
-from Motion import Motion
+from motion import Motion
+
+PLAYING = True
 
 scene = bge.logic.getCurrentScene()
 top = scene.objects['b_top']
@@ -36,7 +38,6 @@ bot = scene.objects['b_bot']
 left = scene.objects['b_left']
 right = scene.objects['b_right']
 cam = scene.objects['Camera']
-
 
 log = logging.getLogger('server')
 
@@ -172,43 +173,12 @@ class Detector:
             if wait:
                 self.acq.wait()
 
-detector = Detector(scene, 'Detector')
-
-# WELL-ALIGNED (GAP 0) POSITIONS ARE:
-# top z=2   (4x2x1)+ROTX90
-# bot z=-2  (4x2x1)+ROTX90
-# left x=-2 (2x4x1)+ROTX90
-# right x=2 (2x4x1)+ROTX90
-
-m_top = Motion()
-m_bot = Motion()
-m_left = Motion()
-m_right = Motion()
-motor_names = [b'top', b'bot', b'left', b'right']
-motors = {b'top': m_top,
-          b'bot': m_bot,
-          b'left': m_left,
-          b'right': m_right}
-
-for m in motors.values():
-    m.setMinVelocity(0)
-    m.setMaxVelocity(100)
-    m.setAccelerationTime(0.1)
-    m.setDecelerationTime(0.1)
-    m.setCurrentPosition(0)
-
-# MOVE TO START POSITION
-m_top.startMotion(0, 20)
-m_bot.startMotion(0, -50)
-m_left.startMotion(0, -50)
-m_right.startMotion(0, 20)
-
 
 def rgb2gray(rgb):
     return np.dot(rgb[..., :3], [0.2989, 0.5870, 0.1140])
 
 
-def handle_sock(clientsock, addr):
+def handle_sock(clientsock, addr, config):
     global PLAYING
     log.info('client at %r connected', addr)
 
@@ -225,7 +195,7 @@ def handle_sock(clientsock, addr):
                 clientsock.close()
                 return
             try:
-                ans = execute_cmd(cmd)
+                ans = execute_cmd(cmd, config)
                 if ans is None:
                     ans = 'Ready\n'
                 if not isinstance(ans, bytes):
@@ -367,48 +337,84 @@ def execute_cmd(cmd):
         return start_acq()
 
 
-def update_positions():
-    global PLAYING, m_top, m_bot, m_left, m_right
+def update_positions(config):
+    global PLAYING
     while PLAYING:
         try:
             bge.logic.NextFrame()
-            top.localPosition[2] = m_top.getCurrentPosition() / 10.0
-            bot.localPosition[2] = m_bot.getCurrentPosition() / 10.0
-            left.localPosition[0] = m_left.getCurrentPosition() / 10.0
-            right.localPosition[0] = m_right.getCurrentPosition() / 10.0
+            top.localPosition[2] = config[b'top'].getCurrentPosition() / 10.0
+            bot.localPosition[2] = config[b'bot'].getCurrentPosition() / 10.0
+            left.localPosition[0] = config[b'left'].getCurrentPosition() / 10.0
+            right.localPosition[0] = config[b'right'].getCurrentPosition() / 10.0
         except:
-            pass
+            log.exception('update_positions loop error. Stopping updates')
+            return
+        time.sleep(1/60.0)
 
-        # CONFIGURE TCP SERVER
 
+def run():
+    global PLAYING
 
-fmt = '%(threadName)-10s %(asctime)-15s %(levelname)-5s %(name)s: %(message)s'
-logging.basicConfig(level=logging.INFO, format=fmt)
-PLAYING = True
-serversock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-serversock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-serversock.bind(('127.0.0.1', 9999))
-serversock.listen(1)
+    fmt = '%(threadName)-10s %(asctime)-15s %(levelname)-5s %(name)s: %(message)s'
+    logging.basicConfig(level=logging.INFO, format=fmt)
 
-tup = Thread(target=update_positions, args=())
-tup.daemon = True
-tup.start()
+    detector = Detector(scene, 'Detector')
 
-log.info("Ready to accept requests!")
-log.info("Exit with Ctrl-C.")
-try:
-    while PLAYING:
-        bge.logic.NextFrame()
-        clientsock, addr = serversock.accept()
-        ts = Thread(target=handle_sock, args=(clientsock, addr))
-        ts.daemon = True
-        ts.start()
-except KeyboardInterrupt:
-    PLAYING = False
-    log.info('Ctrl-C pressed. Bailing out!')
-finally:
-    serversock.shutdown(socket.SHUT_RDWR)
-    serversock.close()
+    # WELL-ALIGNED (GAP 0) POSITIONS ARE:
+    # top z=2   (4x2x1)+ROTX90
+    # bot z=-2  (4x2x1)+ROTX90
+    # left x=-2 (2x4x1)+ROTX90
+    # right x=2 (2x4x1)+ROTX90
 
-tup.join()
-exit(0)
+    m_top = Motion()
+    m_bot = Motion()
+    m_left = Motion()
+    m_right = Motion()
+    motor_names = [b'top', b'bot', b'left', b'right']
+    motors = {b'top': m_top,
+              b'bot': m_bot,
+              b'left': m_left,
+              b'right': m_right}
+
+    config = dict(motors, detector=detector)
+
+    for m in motors.values():
+        m.setMinVelocity(0)
+        m.setMaxVelocity(100)
+        m.setAccelerationTime(0.1)
+        m.setDecelerationTime(0.1)
+        m.setCurrentPosition(0)
+
+    # MOVE TO START POSITION
+    m_top.startMotion(0, 20)
+    m_bot.startMotion(0, -50)
+    m_left.startMotion(0, -50)
+    m_right.startMotion(0, 20)
+
+    motctrl_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    motctrl_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    motctrl_socket.bind(('127.0.0.1', 9999))
+    motctrl_socket.listen(1)
+
+    tup = Thread(target=update_positions, args=(config,))
+    tup.daemon = True
+    tup.start()
+
+    log.info("Ready to accept requests!")
+    log.info("Exit with Ctrl-C.")
+    try:
+        while PLAYING:
+            bge.logic.NextFrame()
+            clientsock, addr = motctrl_socket.accept()
+            ts = Thread(target=handle_sock, args=(clientsock, addr))
+            ts.daemon = True
+            ts.start()
+    except KeyboardInterrupt:
+        PLAYING = False
+        log.info('Ctrl-C pressed. Bailing out!')
+    finally:
+        motctrl_socket.shutdown(socket.SHUT_RDWR)
+        motctrl_socket.close()
+
+    tup.join()
+    exit(0)
