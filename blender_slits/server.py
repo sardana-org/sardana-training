@@ -32,13 +32,6 @@ from motion import Motion
 
 PLAYING = True
 
-scene = bge.logic.getCurrentScene()
-top = scene.objects['b_top']
-bot = scene.objects['b_bot']
-left = scene.objects['b_left']
-right = scene.objects['b_right']
-cam = scene.objects['Camera']
-
 log = logging.getLogger('server')
 
 
@@ -133,20 +126,20 @@ class Detector:
         self.nb_frames = 1
         self.image_counter = itertools.count()
         self.acq = None
-        self.image_name = 'image-{image_nb:03d}'
+        self.image_name = 'image-{image_nb:03d}.h5'
         self.last_image_file_name = ''
         self.last_image_acquired = None
         self.saving_directory = ''
         self.log = logging.getLogger(name)
 
     def render(self):
-        return bge.texture.ImageRender(self.scene, self.obj)
+        return bge.texture.ImageRender(self.scene, self.blender)
 
     def next_image_number(self):
         return next(self.image_counter)
 
     @property
-    def obj(self):
+    def blender(self):
         return self.scene.objects[self.name]
 
     @property
@@ -208,24 +201,27 @@ def handle_sock(clientsock, addr, config):
             pass
 
 
-def prepare_acq():
+def prepare_acq(config):
     try:
-        detector.prepare_acquisition()
+        config['detector'].prepare_acquisition()
         return 'OK\n'
     except Exception as err:
         return 'ERROR: {}\n'.format(err)
 
 
-def start_acq():
+def start_acq(config):
     try:
-        detector.start_acquisition()
+        config['detector'].start_acquisition()
         return 'OK\n'
     except Exception as err:
         return 'ERROR: {}\n'.format(err)
 
 
-def execute_cmd(cmd):
-    global PLAYING, motors
+def execute_cmd(cmd, config):
+    global PLAYING
+    motors = config['motors']
+    motor_names = tuple(motors)
+    detector = config['detector']
     cmd_args = cmd.split()
     if cmd_args[0] in motor_names:
         # <motor> <value>
@@ -331,21 +327,22 @@ def execute_cmd(cmd):
         detector.image_name = cmd.split()[1].decode()
 
     if cmd.startswith(b'acq_prepare'):
-        return prepare_acq()
+        return prepare_acq(config)
 
     if cmd.startswith(b'acq_start'):
-        return start_acq()
+        return start_acq(config)
 
 
 def update_positions(config):
     global PLAYING
+    top, bot, left, right = config[b'top'], config[b'bot'], config[b'left'], config[b'right']
     while PLAYING:
         try:
             bge.logic.NextFrame()
-            top.localPosition[2] = config[b'top'].getCurrentPosition() / 10.0
-            bot.localPosition[2] = config[b'bot'].getCurrentPosition() / 10.0
-            left.localPosition[0] = config[b'left'].getCurrentPosition() / 10.0
-            right.localPosition[0] = config[b'right'].getCurrentPosition() / 10.0
+            top.blender.localPosition[2] = top.getCurrentPosition() / 10.0
+            bot.blender.localPosition[2] = bot.getCurrentPosition() / 10.0
+            left.blender.localPosition[0] = left.getCurrentPosition() / 10.0
+            right.blender.localPosition[0] = right.getCurrentPosition() / 10.0
         except:
             log.exception('update_positions loop error. Stopping updates')
             return
@@ -358,6 +355,12 @@ def run():
     fmt = '%(threadName)-10s %(asctime)-15s %(levelname)-5s %(name)s: %(message)s'
     logging.basicConfig(level=logging.INFO, format=fmt)
 
+    scene = bge.logic.getCurrentScene()
+    top = scene.objects['b_top']
+    bot = scene.objects['b_bot']
+    left = scene.objects['b_left']
+    right = scene.objects['b_right']
+
     detector = Detector(scene, 'Detector')
 
     # WELL-ALIGNED (GAP 0) POSITIONS ARE:
@@ -367,16 +370,19 @@ def run():
     # right x=2 (2x4x1)+ROTX90
 
     m_top = Motion()
+    m_top.blender = top
     m_bot = Motion()
+    m_bot.blender = bot
     m_left = Motion()
+    m_left.blender = left
     m_right = Motion()
-    motor_names = [b'top', b'bot', b'left', b'right']
+    m_right.blender = right
     motors = {b'top': m_top,
               b'bot': m_bot,
               b'left': m_left,
               b'right': m_right}
 
-    config = dict(motors, detector=detector)
+    config = dict(motors, motors=motors, detector=detector)
 
     for m in motors.values():
         m.setMinVelocity(0)
@@ -406,7 +412,7 @@ def run():
         while PLAYING:
             bge.logic.NextFrame()
             clientsock, addr = motctrl_socket.accept()
-            ts = Thread(target=handle_sock, args=(clientsock, addr))
+            ts = Thread(target=handle_sock, args=(clientsock, addr, config))
             ts.daemon = True
             ts.start()
     except KeyboardInterrupt:
