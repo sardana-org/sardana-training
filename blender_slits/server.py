@@ -187,26 +187,11 @@ def handle_sock(clientsock, addr, config):
                 clientsock.sendall(ans)
                 log_ans = ans if len(ans) < 80 else ans[:75] + b'[...]'
                 log.info('cmd: %r -> %r', cmd, log_ans)
-            except Exception as e:
+            except Exception as err:
+                clientsock.sendall('ERROR: {!r}\n'.format(err).encode())
                 log.exception('Error running %r', cmd)
         except:
             pass
-
-
-def prepare_acq(config):
-    try:
-        config['detector'].prepare_acquisition()
-        return 'OK\n'
-    except Exception as err:
-        return 'ERROR: {}\n'.format(err)
-
-
-def start_acq(config):
-    try:
-        config['detector'].start_acquisition()
-        return 'OK\n'
-    except Exception as err:
-        return 'ERROR: {}\n'.format(err)
 
 
 def execute_cmd(cmd, config):
@@ -318,14 +303,21 @@ def execute_cmd(cmd, config):
         detector.image_name = cmd.split()[1]
 
     if cmd.startswith('acq_prepare'):
-        return prepare_acq(config)
+        detector.prepare_acquisition()
+        return 'OK\n'
 
     if cmd.startswith('acq_start'):
-        return start_acq(config)
+        detector.start_acquisition()
+        return 'OK\n'
 
     if cmd.startswith('acq_stop'):
         detector.stop_acquisition()
         return 'OK\n'
+
+    if cmd == 'error':
+        raise Exception('Hey! You did that on purpose!')
+
+    return 'ERROR: Unknown command {!r}\n'.format(cmd)
 
 
 def update_frame(config):
