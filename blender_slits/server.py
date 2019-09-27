@@ -413,4 +413,4 @@ def run():
         log.info('Ctrl-C pressed. Bailing out!')
     motor_ctrl_server.stop()
     det_ctrl_server.stop()
-    exit(0)
+    return 0
