@@ -104,7 +104,9 @@ class Acquisition:
         #print(1, self.status)
         # big hack: need to get hold of the frame data before NextFrame() is called
         # essencially we cannot do more than one frame :-(
+        start = time.time()
         canvas = self.detector.render()
+        self.detector.log.info('Render time: %fs', time.time() - start)
         data = np.asarray(canvas.image, dtype=np.uint8)
         width, height = canvas.size
         self.task = Thread(target=self.acquire, args=(data, width, height))
