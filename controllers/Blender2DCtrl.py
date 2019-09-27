@@ -109,7 +109,7 @@ class Blender2DController(TwoDController, Referable):
         "Port": {
             Type : int,
             Description : "Port the blender detector listens on",
-            DefaultValue : 9999},
+            DefaultValue : 9998},
         }
 
     def __init__(self, inst, props, *args, **kwargs):
@@ -136,7 +136,6 @@ class Blender2DController(TwoDController, Referable):
 
     def ReadOne(self, axis):
         data = self.detector.last_image
-        print(type(data), data)
         return data
 
     def AbortOne(self, axis):

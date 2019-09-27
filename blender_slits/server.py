@@ -22,6 +22,7 @@ import time
 import socket
 import logging
 import pathlib
+import functools
 import itertools
 import numpy as np
 import h5py
@@ -164,40 +165,39 @@ def rgb2gray(rgb):
     return np.dot(rgb[..., :3], [0.2989, 0.5870, 0.1140])
 
 
-def handle_sock(clientsock, addr, config):
+def handle_sock(sock, addr, cmd_handler):
     log.info('client at %r connected', addr)
 
     while True:
         try:
-            data = clientsock.recv(4096)
+            data = sock.recv(4096)
             cmd = data.lower().strip().decode()
             if not data:
                 log.info('client at %r disconnected', addr)
                 return
             if cmd == 'q':
                 log.info('client at %r quit', addr)
-                clientsock.close()
+                sock.close()
                 return
             try:
-                ans = execute_cmd(cmd, config)
+                ans = cmd_handler(cmd=cmd)
                 if ans is None:
                     ans = 'Ready\n'
                 if not isinstance(ans, bytes):
                     ans = ans.encode()
-                clientsock.sendall(ans)
+                sock.sendall(ans)
                 log_ans = ans if len(ans) < 80 else ans[:75] + b'[...]'
                 log.info('cmd: %r -> %r', cmd, log_ans)
             except Exception as err:
-                clientsock.sendall('ERROR: {!r}\n'.format(err).encode())
+                sock.sendall('ERROR: {!r}\n'.format(err).encode())
                 log.exception('Error running %r', cmd)
         except:
             pass
 
 
-def execute_cmd(cmd, config):
+def execute_motor_cmd(cmd, config):
     motors = config['motors']
     motor_names = tuple(motors)
-    detector = config['detector']
     cmd_args = cmd.split()
     if cmd_args[0] in motor_names:
         # <motor> <value>
@@ -236,7 +236,6 @@ def execute_cmd(cmd, config):
         ans += ' ' + cmd_args[1]
         if cmd_args[0] == '?pos':
             ans += ' ' + str(cmd_m.getCurrentPosition())
-            print(ans)
         if cmd_args[0] == '?state':
             if cmd_m.isInMotion():
                 ans += ' MOVING'
@@ -265,6 +264,14 @@ def execute_cmd(cmd, config):
         ans = ' '.join(states)
         return ans + '\n'
 
+    if cmd == 'error':
+        raise Exception('Hey! You did that on purpose!')
+
+    return 'ERROR: Unknown command {!r}\n'.format(cmd)
+
+
+def execute_detector_cmd(cmd, config):
+    detector = config['detector']
     if cmd == '?acq_image':
         data = detector.last_image_acquired
         import pickle
@@ -272,45 +279,49 @@ def execute_cmd(cmd, config):
         size = len(data)
         return '{:08d}'.format(size).encode() + data
 
-    if cmd.startswith('?acq_exposure_time'):
+    elif cmd == '?acq_exposure_time':
         return 'acq_exposure_time {}\n'.format(detector.exposure_time)
 
-    if cmd.startswith('?acq_nb_frames'):
+    elif cmd == '?acq_nb_frames':
         return 'acq_nb_frames {}\n'.format(detector.nb_frames)
 
-    if cmd.startswith('?acq_saving_directory'):
+    elif cmd == '?acq_saving_directory':
         return 'acq_saving_directory {}\n'.format(detector.saving_directory)
 
-    if cmd.startswith('?acq_image_name'):
+    elif cmd == '?acq_image_name':
         return 'acq_image_name {}\n'.format(detector.image_name)
 
-    if cmd.startswith('?acq_status'):
+    elif cmd == '?acq_status':
         return 'acq_status {}\n'.format(detector.acq_status)
 
-    if cmd.startswith('?acq_last_image_file_name'):
+    elif cmd == '?acq_last_image_file_name':
         return 'acq_last_image_file_name {}\n'.format(detector.last_image_file_name)
 
-    if cmd.startswith('acq_exposure_time'):
+    elif cmd.startswith('acq_exposure_time'):
         detector.exposure_time = float(cmd.split()[1])
+        return 'OK\n'
 
-    if cmd.startswith('acq_nb_frames'):
+    elif cmd.startswith('acq_nb_frames'):
         detector.nb_frames = int(cmd.split()[1])
+        return 'OK\n'
 
-    if cmd.startswith('acq_saving_directory'):
+    elif cmd.startswith('acq_saving_directory'):
         detector.saving_directory = cmd.split()[1]
+        return 'OK\n'
 
-    if cmd.startswith('acq_image_name'):
+    elif cmd.startswith('acq_image_name'):
         detector.image_name = cmd.split()[1]
+        return 'OK\n'
 
-    if cmd.startswith('acq_prepare'):
+    elif cmd.startswith('acq_prepare'):
         detector.prepare_acquisition()
         return 'OK\n'
 
-    if cmd.startswith('acq_start'):
+    elif cmd.startswith('acq_start'):
         detector.start_acquisition()
         return 'OK\n'
 
-    if cmd.startswith('acq_stop'):
+    elif cmd.startswith('acq_stop'):
         detector.stop_acquisition()
         return 'OK\n'
 
@@ -377,11 +388,20 @@ def run():
     m_left.startMotion(0, -50)
     m_right.startMotion(0, 20)
 
-    def handle(sock, addr):
-        handle_sock(sock, addr, config)
+    motor_cmd_func = functools.partial(execute_motor_cmd, config=config)
+    def handle_motor_ctrl(sock, addr):
+        handle_sock(sock, addr, motor_cmd_func)
+    motor_ctrl_server = gevent.server.StreamServer(('0', 9999),
+                                                   handle_motor_ctrl)
 
-    motctrl_server = gevent.server.StreamServer(('0', 9999), handle)
-    motctrl_server.start()
+    det_cmd_func = functools.partial(execute_detector_cmd, config=config)
+    def handle_det_ctrl(sock, addr):
+        handle_sock(sock, addr, det_cmd_func)
+    det_ctrl_server = gevent.server.StreamServer(('0', 9998),
+                                                 handle_det_ctrl)
+
+    motor_ctrl_server.start()
+    det_ctrl_server.start()
     log.info("Ready to accept requests!")
     log.info("Exit with Ctrl-C.")
 
@@ -391,5 +411,6 @@ def run():
             gevent.sleep(1/30)
     except KeyboardInterrupt:
         log.info('Ctrl-C pressed. Bailing out!')
-    motctrl_server.stop()
+    motor_ctrl_server.stop()
+    det_ctrl_server.stop()
     exit(0)
