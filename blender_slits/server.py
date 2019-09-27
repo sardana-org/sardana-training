@@ -27,10 +27,8 @@ import numpy as np
 import h5py
 from PIL import Image
 
-from threading import Thread
+import gevent.server
 from motion import Motion
-
-PLAYING = True
 
 log = logging.getLogger('server')
 
@@ -47,28 +45,31 @@ class Acquisition:
         self.start_time = None
         self.end_time = None
         self.task = None
-        self.stopped = False
-        self.images = []
 
     def prepare(self):
         if self.saving_directory:
             os.makedirs(self.saving_directory, exist_ok=True)
 
-    def acquire(self, data, width, height):
+    def acquire(self):
         self.detector.log.info(
             'start acquisition exposure_time=%ss', self.exposure_time)
         try:
-            self._acquire(data, width, height)
+            self._acquire()
         finally:
             self.status = 'Ready'
         self.detector.log.info('Finished acquisition')
 
-    def _acquire(self, data, width, height):
+    def _acquire(self):
         detector = self.detector
         log = detector.log
-        self.start_time = time.time()
         self.status = 'Acquiring'
-        time.sleep(self.exposure_time)
+        self.start_time = time.time()
+        canvas = self.detector.render()
+        data = np.asarray(canvas.image, dtype=np.uint8)
+        width, height = canvas.size
+        dt = self.exposure_time - (time.time() - self.start_time)
+        if dt > 0:
+            gevent.sleep(dt)
         self.status = 'Readout'
         # 512x256
         start = time.time()
@@ -101,17 +102,11 @@ class Acquisition:
     def start(self):
         if self.task is not None:
             raise RuntimeError('Cannot start same acquisition twice')
-        self.status = 'Acquiring'
-        #print(1, self.status)
-        # big hack: need to get hold of the frame data before NextFrame() is called
-        # essencially we cannot do more than one frame :-(
-        start = time.time()
-        canvas = self.detector.render()
-        self.detector.log.info('Render time: %fs', time.time() - start)
-        data = np.asarray(canvas.image, dtype=np.uint8)
-        width, height = canvas.size
-        self.task = Thread(target=self.acquire, args=(data, width, height))
-        self.task.start()
+        self.task = gevent.spawn(self.acquire)
+
+    def stop(self):
+        if self.task is not None:
+            self.task.kill()
 
     def wait(self):
         self.task.join()
@@ -159,12 +154,10 @@ class Detector:
             raise RuntimeError('Previous acquisition not finished yet!')
         acq.start()
 
-    def stop_acquisition(self, wait=False):
+    def stop_acquisition(self):
         acq = self.acq
         if acq:
-            acq.stopped = True
-            if wait:
-                self.acq.wait()
+            acq.stop()
 
 
 def rgb2gray(rgb):
@@ -172,18 +165,16 @@ def rgb2gray(rgb):
 
 
 def handle_sock(clientsock, addr, config):
-    global PLAYING
     log.info('client at %r connected', addr)
 
-    while PLAYING:
+    while True:
         try:
-            bge.logic.NextFrame()
             data = clientsock.recv(4096)
-            cmd = data.lower().strip()
+            cmd = data.lower().strip().decode()
             if not data:
                 log.info('client at %r disconnected', addr)
                 return
-            if cmd == b'q':
+            if cmd == 'q':
                 log.info('client at %r quit', addr)
                 clientsock.close()
                 return
@@ -194,7 +185,8 @@ def handle_sock(clientsock, addr, config):
                 if not isinstance(ans, bytes):
                     ans = ans.encode()
                 clientsock.sendall(ans)
-                log.info('cmd: %r -> %r', cmd, ans[:20])
+                log_ans = ans if len(ans) < 80 else ans[:75] + b'[...]'
+                log.info('cmd: %r -> %r', cmd, log_ans)
             except Exception as e:
                 log.exception('Error running %r', cmd)
         except:
@@ -218,7 +210,6 @@ def start_acq(config):
 
 
 def execute_cmd(cmd, config):
-    global PLAYING
     motors = config['motors']
     motor_names = tuple(motors)
     detector = config['detector']
@@ -230,11 +221,11 @@ def execute_cmd(cmd, config):
         p = m.getCurrentPosition()
         m.startMotion(p, cmd_v)
 
-    if cmd.startswith(b'abort'):
+    if cmd.startswith('abort'):
         for m in motors.values():
             m.abortMotion()
 
-    if cmd.startswith(b'move'):
+    if cmd.startswith('move'):
         pairs = cmd_args[1:]
         for n, v in zip(pairs[::2], pairs[1::2]):
             m = motors[n]
@@ -242,44 +233,44 @@ def execute_cmd(cmd, config):
             p = m.getCurrentPosition()
             m.startMotion(p, cmd_v)
 
-    if cmd_args[0] in [b'acc', b'vel']:
+    if cmd_args[0] in ['acc', 'vel']:
         # <acc/vel> <motor> <value>
         cmd_m = motors[cmd_args[1]]
         cmd_v = float(cmd_args[2])
 
-    if cmd.startswith(b'vel'):
+    if cmd.startswith('vel'):
         cmd_m.setMaxVelocity(cmd_v)
 
-    if cmd.startswith(b'acc'):
+    if cmd.startswith('acc'):
         cmd_m.setAccelerationTime(cmd_v)
         cmd_m.setDecelerationTime(cmd_v)
 
-    if cmd_args[0] in [b'?pos', b'?state', b'?vel', b'?acc']:
+    if cmd_args[0] in ['?pos', '?state', '?vel', '?acc']:
         cmd_m = motors[cmd_args[1]]
-        ans = cmd_args[0][1:].decode('utf-8')
-        ans += ' ' + cmd_args[1].decode('utf-8')
-        if cmd_args[0] == b'?pos':
+        ans = cmd_args[0][1:]
+        ans += ' ' + cmd_args[1]
+        if cmd_args[0] == '?pos':
             ans += ' ' + str(cmd_m.getCurrentPosition())
             print(ans)
-        if cmd_args[0] == b'?state':
+        if cmd_args[0] == '?state':
             if cmd_m.isInMotion():
                 ans += ' MOVING'
             else:
                 ans += ' ON'
-        if cmd_args[0] == b'?acc':
+        if cmd_args[0] == '?acc':
             ans += ' ' + str(cmd_m.getAccelerationTime())
-        if cmd_args[0] == b'?vel':
+        if cmd_args[0] == '?vel':
             ans += ' ' + str(cmd_m.getMaxVelocity())
         return ans + '\n'
 
-    if cmd.startswith(b'?positions'):
+    if cmd.startswith('?positions'):
         l = []
         for n in motor_names:
             l.append(str(motors[n].getCurrentPosition()))
         ans = ' '.join(l)
         return ans + '\n'
 
-    if cmd.startswith(b'?states'):
+    if cmd.startswith('?states'):
         states = []
         for n in motor_names:
             if motors[n].isInMotion():
@@ -289,70 +280,67 @@ def execute_cmd(cmd, config):
         ans = ' '.join(states)
         return ans + '\n'
 
-    if cmd == b'?acq_image':
+    if cmd == '?acq_image':
         data = detector.last_image_acquired
         import pickle
         data = pickle.dumps(data)
         size = len(data)
         return '{:08d}'.format(size).encode() + data
 
-    if cmd.startswith(b'?acq_exposure_time'):
+    if cmd.startswith('?acq_exposure_time'):
         return 'acq_exposure_time {}\n'.format(detector.exposure_time)
 
-    if cmd.startswith(b'?acq_nb_frames'):
+    if cmd.startswith('?acq_nb_frames'):
         return 'acq_nb_frames {}\n'.format(detector.nb_frames)
 
-    if cmd.startswith(b'?acq_saving_directory'):
+    if cmd.startswith('?acq_saving_directory'):
         return 'acq_saving_directory {}\n'.format(detector.saving_directory)
 
-    if cmd.startswith(b'?acq_image_name'):
+    if cmd.startswith('?acq_image_name'):
         return 'acq_image_name {}\n'.format(detector.image_name)
 
-    if cmd.startswith(b'?acq_status'):
+    if cmd.startswith('?acq_status'):
         return 'acq_status {}\n'.format(detector.acq_status)
 
-    if cmd.startswith(b'?acq_last_image_file_name'):
+    if cmd.startswith('?acq_last_image_file_name'):
         return 'acq_last_image_file_name {}\n'.format(detector.last_image_file_name)
 
-    if cmd.startswith(b'acq_exposure_time'):
+    if cmd.startswith('acq_exposure_time'):
         detector.exposure_time = float(cmd.split()[1])
 
-    if cmd.startswith(b'acq_nb_frames'):
+    if cmd.startswith('acq_nb_frames'):
         detector.nb_frames = int(cmd.split()[1])
 
-    if cmd.startswith(b'acq_saving_directory'):
-        detector.saving_directory = cmd.split()[1].decode()
+    if cmd.startswith('acq_saving_directory'):
+        detector.saving_directory = cmd.split()[1]
 
-    if cmd.startswith(b'acq_image_name'):
-        detector.image_name = cmd.split()[1].decode()
+    if cmd.startswith('acq_image_name'):
+        detector.image_name = cmd.split()[1]
 
-    if cmd.startswith(b'acq_prepare'):
+    if cmd.startswith('acq_prepare'):
         return prepare_acq(config)
 
-    if cmd.startswith(b'acq_start'):
+    if cmd.startswith('acq_start'):
         return start_acq(config)
 
+    if cmd.startswith('acq_stop'):
+        detector.stop_acquisition()
+        return 'OK\n'
 
-def update_positions(config):
-    global PLAYING
-    top, bot, left, right = config[b'top'], config[b'bot'], config[b'left'], config[b'right']
-    while PLAYING:
-        try:
-            bge.logic.NextFrame()
-            top.blender.localPosition[2] = top.getCurrentPosition() / 10.0
-            bot.blender.localPosition[2] = bot.getCurrentPosition() / 10.0
-            left.blender.localPosition[0] = left.getCurrentPosition() / 10.0
-            right.blender.localPosition[0] = right.getCurrentPosition() / 10.0
-        except:
-            log.exception('update_positions loop error. Stopping updates')
-            return
-        time.sleep(1/60.0)
+
+def update_frame(config):
+    top, bot, left, right = config['top'], config['bot'], config['left'], config['right']
+    motions = any(map(Motion.isInMotion, (top, bot, left, right)))
+    if motions:
+        top.blender.localPosition[2] = top.getCurrentPosition() / 10.0
+        bot.blender.localPosition[2] = bot.getCurrentPosition() / 10.0
+        left.blender.localPosition[0] = left.getCurrentPosition() / 10.0
+        right.blender.localPosition[0] = right.getCurrentPosition() / 10.0
+        bge.logic.NextFrame()
 
 
 def run():
-    global PLAYING
-
-    fmt = '%(threadName)-10s %(asctime)-15s %(levelname)-5s %(name)s: %(message)s'
+    fmt = '%(asctime)-15s %(levelname)-5s %(threadName)s %(name)s: %(message)s'
     logging.basicConfig(level=logging.INFO, format=fmt)
 
     scene = bge.logic.getCurrentScene()
@@ -377,10 +365,10 @@ def run():
     m_left.blender = left
     m_right = Motion()
     m_right.blender = right
-    motors = {b'top': m_top,
-              b'bot': m_bot,
-              b'left': m_left,
-              b'right': m_right}
+    motors = {'top': m_top,
+              'bot': m_bot,
+              'left': m_left,
+              'right': m_right}
 
     config = dict(motors, motors=motors, detector=detector)
 
@@ -397,30 +385,19 @@ def run():
     m_left.startMotion(0, -50)
     m_right.startMotion(0, 20)
 
-    motctrl_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    motctrl_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    motctrl_socket.bind(('127.0.0.1', 9999))
-    motctrl_socket.listen(1)
+    def handle(sock, addr):
+        handle_sock(sock, addr, config)
 
-    tup = Thread(target=update_positions, args=(config,))
-    tup.daemon = True
-    tup.start()
-
+    motctrl_server = gevent.server.StreamServer(('0', 9999), handle)
+    motctrl_server.start()
     log.info("Ready to accept requests!")
     log.info("Exit with Ctrl-C.")
-    try:
-        while PLAYING:
-            bge.logic.NextFrame()
-            clientsock, addr = motctrl_socket.accept()
-            ts = Thread(target=handle_sock, args=(clientsock, addr, config))
-            ts.daemon = True
-            ts.start()
-    except KeyboardInterrupt:
-        PLAYING = False
-        log.info('Ctrl-C pressed. Bailing out!')
-    finally:
-        motctrl_socket.shutdown(socket.SHUT_RDWR)
-        motctrl_socket.close()
 
-    tup.join()
+    try:
+        while True:
+            update_frame(config)
+            gevent.sleep(1/30)
+    except KeyboardInterrupt:
+        log.info('Ctrl-C pressed. Bailing out!')
+    motctrl_server.stop()
     exit(0)
