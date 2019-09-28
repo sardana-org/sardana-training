@@ -169,31 +169,31 @@ def execute_detector_cmd(cmd, config):
 
     elif cmd.startswith('acq_exposure_time'):
         detector.exposure_time = float(cmd.split()[1])
-        return 'OK\n'
+        return 'Ready\n'
 
     elif cmd.startswith('acq_nb_frames'):
         detector.nb_frames = int(cmd.split()[1])
-        return 'OK\n'
+        return 'Ready\n'
 
     elif cmd.startswith('acq_saving_directory'):
         detector.saving_directory = cmd.split()[1]
-        return 'OK\n'
+        return 'Ready\n'
 
     elif cmd.startswith('acq_image_name'):
         detector.image_name = cmd.split()[1]
-        return 'OK\n'
+        return 'Ready\n'
 
     elif cmd.startswith('acq_prepare'):
         detector.prepare_acquisition()
-        return 'OK\n'
+        return 'Ready\n'
 
     elif cmd.startswith('acq_start'):
         detector.start_acquisition()
-        return 'OK\n'
+        return 'Ready\n'
 
     elif cmd.startswith('acq_stop'):
         detector.stop_acquisition()
-        return 'OK\n'
+        return 'Ready\n'
 
     if cmd == 'error':
         raise Exception('Hey! You did that on purpose!')

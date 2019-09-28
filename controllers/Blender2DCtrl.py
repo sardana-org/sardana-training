@@ -38,7 +38,7 @@ class BlenderDetector:
 
     def stop_acquisition(self):
         r = self.ask('acq_stop')
-        assert 'OK' in r
+        assert 'Ready' in r
 
     @property
     def acq_status(self):
