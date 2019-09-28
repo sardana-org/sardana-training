@@ -1,13 +1,13 @@
 """
-This file is part of Sardana-Training documentation 
+This file is part of Sardana-Training documentation
 2017 ALBA Synchrotron
 
-Sardana-Training documentation is free software: you can redistribute it and/or 
-modify it under the terms of the GNU Lesser General Public License as published 
+Sardana-Training documentation is free software: you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public License as published
 by the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Sardana-Training documentation is distributed in the hope that it will be 
+Sardana-Training documentation is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Lesser General Public License for more details.
@@ -16,165 +16,29 @@ You should have received a copy of the GNU Lesser General Public License
 along with Sardana-Training.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import bge
-import os
-import time
-import socket
 import logging
-import pathlib
 import functools
-import itertools
-import numpy as np
-import h5py
-from PIL import Image
 
+import bge
 import gevent.server
-from motion import Motion
+
+from .motion import Motion
+from .detector import Detector
+
 
 log = logging.getLogger('server')
 
 
-class Acquisition:
-
-    def __init__(self, detector, exposure_time, nb_frames,
-                 saving_directory, image_name):
-        self.detector = detector
-        self.exposure_time = exposure_time
-        self.saving_directory = saving_directory
-        self.image_name = image_name
-        self.status = 'Ready'
-        self.start_time = None
-        self.end_time = None
-        self.task = None
-
-    def prepare(self):
-        if self.saving_directory:
-            os.makedirs(self.saving_directory, exist_ok=True)
-
-    def acquire(self):
-        self.detector.log.info(
-            'start acquisition exposure_time=%ss', self.exposure_time)
-        try:
-            self._acquire()
-        finally:
-            self.status = 'Ready'
-        self.detector.log.info('Finished acquisition')
-
-    def _acquire(self):
-        detector = self.detector
-        log = detector.log
-        self.status = 'Acquiring'
-        self.start_time = time.time()
-        canvas = self.detector.render()
-        data = np.asarray(canvas.image, dtype=np.uint8)
-        width, height = canvas.size
-        dt = self.exposure_time - (time.time() - self.start_time)
-        if dt > 0:
-            gevent.sleep(dt)
-        self.status = 'Readout'
-        # 512x256
-        start = time.time()
-        rgba_array = data.reshape((height, width, 4))
-        gray_array = rgb2gray(rgba_array)
-        detector.last_image_acquired = gray_array
-        log.info('Readout time: %fs', time.time() - start)
-        if self.saving_directory and self.image_name:
-            self.status = 'Saving'
-            image_nb = detector.next_image_number()
-            image_name = self.image_name.format(image_nb=image_nb)
-            image_path = pathlib.Path(self.saving_directory, image_name)
-            if image_path.suffix == '.h5':
-                start = time.time()
-                h5f = h5py.File(image_path.with_suffix('.h5'), "w")
-                h5f.create_dataset("img", data=gray_array.astype(np.uint8))
-                log.info('HDF5 save time: %fs', time.time() - start)
-                detector.last_image_file_name = image_path
-            elif image_path.suffix == '.png':
-                start = time.time()
-                im = Image.fromarray(rgba_array, 'RGBA')
-                im.save(image_path.with_suffix('.png'))
-                log.info('PNG save time: %fs', time.time() - start)
-                detector.last_image_file_name = image_path
-            else:
-                log.warning('Unknown saving extension %r. File not saved', image_path.suffix)
-        self.end_time = time.time()
-        self.status = 'Ready'
-
-    def start(self):
-        if self.task is not None:
-            raise RuntimeError('Cannot start same acquisition twice')
-        self.task = gevent.spawn(self.acquire)
-
-    def stop(self):
-        if self.task is not None:
-            self.task.kill()
-
-    def wait(self):
-        self.task.join()
-
-
-class Detector:
-
-    def __init__(self, scene, name):
-        self.scene = scene
-        self.name = name
-        self.exposure_time = 1.0
-        self.nb_frames = 1
-        self.image_counter = itertools.count()
-        self.acq = None
-        self.image_name = 'image-{image_nb:03d}.h5'
-        self.last_image_file_name = ''
-        self.last_image_acquired = None
-        self.saving_directory = ''
-        self.log = logging.getLogger(name)
-
-    def render(self):
-        return bge.texture.ImageRender(self.scene, self.blender)
-
-    def next_image_number(self):
-        return next(self.image_counter)
-
-    @property
-    def blender(self):
-        return self.scene.objects[self.name]
-
-    @property
-    def acq_status(self):
-        return 'Ready' if self.acq is None else self.acq.status
-
-    def prepare_acquisition(self):
-        self.acq = Acquisition(self, self.exposure_time, self.nb_frames,
-                               self.saving_directory, self.image_name)
-        self.acq.prepare()
-
-    def start_acquisition(self):
-        acq = self.acq
-        if acq is None:
-            raise RuntimeError('Need to call prepare first!')
-        if acq.status != 'Ready':
-            raise RuntimeError('Previous acquisition not finished yet!')
-        acq.start()
-
-    def stop_acquisition(self):
-        acq = self.acq
-        if acq:
-            acq.stop()
-
-
-def rgb2gray(rgb):
-    return np.dot(rgb[..., :3], [0.2989, 0.5870, 0.1140])
-
-
 def handle_sock(sock, addr, cmd_handler):
     log.info('client at %r connected', addr)
-
+    reader = sock.makefile('r')
     while True:
         try:
-            data = sock.recv(4096)
-            cmd = data.lower().strip().decode()
+            data = reader.readline()
             if not data:
                 log.info('client at %r disconnected', addr)
                 return
+            cmd = data.lower().strip()
             if cmd == 'q':
                 log.info('client at %r quit', addr)
                 sock.close()
@@ -205,10 +69,12 @@ def execute_motor_cmd(cmd, config):
         cmd_v = float(cmd_args[1])
         p = m.getCurrentPosition()
         m.startMotion(p, cmd_v)
+        return 'Ready\n'
 
     if cmd.startswith('abort'):
         for m in motors.values():
             m.abortMotion()
+        return 'Ready\n'
 
     if cmd.startswith('move'):
         pairs = cmd_args[1:]
@@ -217,18 +83,22 @@ def execute_motor_cmd(cmd, config):
             cmd_v = float(v)
             p = m.getCurrentPosition()
             m.startMotion(p, cmd_v)
+        return 'Ready\n'
 
     if cmd_args[0] in ['acc', 'vel']:
         # <acc/vel> <motor> <value>
         cmd_m = motors[cmd_args[1]]
         cmd_v = float(cmd_args[2])
+        return 'Ready\n'
 
     if cmd.startswith('vel'):
         cmd_m.setMaxVelocity(cmd_v)
+        return 'Ready\n'
 
     if cmd.startswith('acc'):
         cmd_m.setAccelerationTime(cmd_v)
         cmd_m.setDecelerationTime(cmd_v)
+        return 'Ready\n'
 
     if cmd_args[0] in ['?pos', '?state', '?vel', '?acc']:
         cmd_m = motors[cmd_args[1]]
@@ -342,7 +212,7 @@ def update_frame(config):
         bge.logic.NextFrame()
 
 
-def run():
+def configure():
     fmt = '%(asctime)-15s %(levelname)-5s %(threadName)s %(name)s: %(message)s'
     logging.basicConfig(level=logging.INFO, format=fmt)
 
@@ -368,12 +238,14 @@ def run():
     m_left.blender = left
     m_right = Motion()
     m_right.blender = right
-    motors = {'top': m_top,
-              'bot': m_bot,
-              'left': m_left,
-              'right': m_right}
+    motors = dict(top=m_top, bot=m_bot, left=m_left, right=m_right)
 
-    config = dict(motors, motors=motors, detector=detector)
+    return dict(motors, motors=motors, detector=detector)
+
+
+def run():
+    config = configure()
+    motors = config['motors']
 
     for m in motors.values():
         m.setMinVelocity(0)
@@ -383,10 +255,10 @@ def run():
         m.setCurrentPosition(0)
 
     # MOVE TO START POSITION
-    m_top.startMotion(0, 20)
-    m_bot.startMotion(0, -50)
-    m_left.startMotion(0, -50)
-    m_right.startMotion(0, 20)
+    config['top'].startMotion(0, 20)
+    config['bot'].startMotion(0, -50)
+    config['left'].startMotion(0, -50)
+    config['right'].startMotion(0, 20)
 
     motor_cmd_func = functools.partial(execute_motor_cmd, config=config)
     def handle_motor_ctrl(sock, addr):
@@ -414,3 +286,4 @@ def run():
     motor_ctrl_server.stop()
     det_ctrl_server.stop()
     return 0
+
