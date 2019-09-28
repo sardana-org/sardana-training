@@ -32,7 +32,7 @@ To install blender slits socket server, from within the proper python environmen
 simply type:
 
 ```console
-pip install blender_slits
+pip install .
 ```
 
 ### How to run a TCP socket server?
