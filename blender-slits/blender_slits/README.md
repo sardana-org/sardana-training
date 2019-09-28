@@ -1,6 +1,5 @@
 # Simulator of slits with beam usign Blender
 
-
 ## How to play manually with slits?
  
 In order to understand the system, I encourage you to execute:
@@ -15,22 +14,61 @@ UP arrow will move TOP blade UP, and <SHIFT>+<UP> will move TOP blade DOWN
 DOWN arrow will move BOTTOM blade DOWN, and <SHIFT>+<DOWN> will move BOTTOM blade UP
 and the same for left and right. You can exit with Q or <Ctrl>+C
 
+## TCP socket server
 
-## How to run a TCP socket server? 
+The TCP socket server runs a blenderplayer with a scene that contains 4 motors and one
+detector. The process listens on two sockets. The first (port 9999) understands motion
+control ASCII commands and the second (port 9998) understands detector control ASCII
+commands.
 
-Run in tow terminals:
+### Installation
+
+You need to have blender + blenderplayer installed.
+
+You must install blender socket server in the same python environment that blender
+uses (ex: if you installed blender system wide, it uses the installed system python3).
+
+To install blender slits socket server, from within the proper python environment,
+simply type:
 
 ```console
-$ blenderplayer slits.blend
+pip install blender_slits
+```
+
+### How to run a TCP socket server?
+
+Run in two terminals:
+
+```console
+$ blender-slits-server
 ```
 
 ```console
  $ python client.py
 ```
 
-## Communication protocol
+### Communication protocol
 
-Communicates via TCP/UP socket on port: 9999.
+Communicates via TCP/UP socket on ports:
+
+* 9999 (motion control) and
+* 9998 (detector control)
+
+#### Common
+
+Communication protocol is ASCII based on request-reply semantics.
+
+Commands must end with newline character (ASCII code 10).
+Replies always end with (ASCII code 10). New line is omitted in the
+description below for better understanding only.
+
+Commands that were accepted reply with:
+`Ready\n`
+
+Commands that are not understood or which result in error reply with:
+`ERROR: <description>\n'
+
+#### Motion
 
 Motor axes are referenced by the following identifiers:
 * top - top blade
@@ -95,6 +133,59 @@ Commands:
 * Set deceleration of a single axis:
   request: dec <axis id> <deceleration>
   answer: Ready
+
+#### Detector
+
+Query commands:
+
+* Query detector exposure time:
+  request: ?acq_exposure_time
+  answer: acq_exposure_time <time in seconds>
+  example: ?acq_exposure_time' -> acq_exposure_time 1.0
+
+* Query detector saving directory:
+  request: ?acq_saving_directory
+  answer: acq_saving_directory <absolute path or empty string if no saving>
+  example: ?acq_saving_directory' -> acq_saving_directory /tmp/sardana
+
+* Query detector image file name pattern (recognizes one variable: image_nb):
+  request: ?acq_image_name
+  answer: acq_image_name <image file name pattern>
+  example: ?acq_image_name' -> acq_image_name image-{image_nb:03d}.h5
+
+* Query detector status (possible values: 'Ready', 'Acquiring', 'Readout', 'Saving')
+  request: ?acq_status
+  answer: acq_status <detector status>
+  example: ?acq_status' -> acq_status Ready
+
+* Query detector last recorded image file name (returns absolute path)
+  request: ?acq_last_image_file_name
+  answer: acq_last_image_file_name <detector last image file name>
+  example: ?acq_last_image_file_name' -> acq_last_image_file_name /tmp/sardana/image-004.h5
+
+Commands:
+
+* Set detector exposure time:
+  request: acq_exposure_time <time in seconds>
+  answer: OK
+
+* Set detector saving directory:
+  request: acq_saving_directory <absolute path or empty string if no saving>
+  answer: OK
+
+* Set detector image file name pattern (recognizes one variable: image_nb):
+  request: acq_image_name <image file name pattern>
+
+* Prepare detector for acquisition (must be called before each `acq_start`)
+  request: acq_prepare
+
+* Start detector acquisition
+  request: acq_start
+
+* Stop detector acquisition
+  request: acq_stop
+
+
 
 ## Notes
 
