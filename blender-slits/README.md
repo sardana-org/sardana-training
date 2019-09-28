@@ -1,14 +1,14 @@
 # Simulator of slits with beam usign Blender
 
 ## How to play manually with slits?
- 
+
 In order to understand the system, I encourage you to execute:
 
 ```console
 $ blenderplayer slits_keyboard_only.blend
 ```
 
-Now you can use arrows (up/down/left/right) to open horizontal and vertical 
+Now you can use arrows (up/down/left/right) to open horizontal and vertical
 gaps with the <SHIFT> modifier you will inverse the movement of each blade:
 UP arrow will move TOP blade UP, and <SHIFT>+<UP> will move TOP blade DOWN
 DOWN arrow will move BOTTOM blade DOWN, and <SHIFT>+<DOWN> will move BOTTOM blade UP
@@ -66,7 +66,7 @@ Commands that were accepted reply with:
 `Ready\n`
 
 Commands that are not understood or which result in error reply with:
-`ERROR: <description>\n'
+`ERROR: <description>\n`
 
 #### Motion
 
@@ -79,113 +79,170 @@ Motor axes are referenced by the following identifiers:
 Query commands:
 
 * Query position of a single axis:
-  request: ?pos <axis id>
-  answer: pos <axis id> <position>
-  example: ?pos top' -> pos top 20.3
+
+  request: `?pos <axis id>`
+
+  answer: `pos <axis id> <position>`
+
+  example: `?pos top` -> `pos top 20.3`
 
 * Query positions of multiple axes
-  request: ?positions
-  answer: <top pos> <bot pos> <left pos> <right pos>
+
+  request: `?positions`
+
+  answer: `<top pos> <bot pos> <left pos> <right pos>`
 
 * Query state of a single axis:
-  request: ?state <axis id>
-  answer: state <axis id> <state>
-          <state> can by either ON or MOVING
+
+  request: `?state <axis id>`
+
+  answer: `state <axis id> <state>`
+
+  (state can by either ON or MOVING)
 
 * Query states of multiple axes
-  request: ?states
-  answer: <top state> <bot state> <left state> <right state>
+
+  request: `?states`
+
+  answer: `<top state> <bot state> <left state> <right state>`
 
 * Query velocity of a single axis:
-  request: ?vel <axis id>
-  answer: vel <axis id> <velocity>
+
+  request: `?vel <axis id>`
+
+  answer: `vel <axis id> <velocity>`
 
 * Query acceleration of a single axis:
-  request: ?acc <axis id>
-  answer: acc <axis id> <acceleration>
+
+  request: `?acc <axis id>`
+
+  answer: `acc <axis id> <acceleration>`
 
 * Query deceleration of a single axis:
-  request: ?dec <axis id>
-  answer: dec <axis id> <deceleration>
+
+  request: `?dec <axis id>`
+
+  answer: `dec <axis id> <deceleration>`
 
 Commands:
 
 * Move a single axis to an absolute position
-  request: <axis id> <position>
-  answer: Ready
+
+  request: `<axis id> <position>`
+
+  answer: `Ready`
 
 * Move multiple axes to absolute positions
-  request: move <axis id> <position> <axis id> <position> ...
-  answer: Ready
+
+  request: `move <axis id> <position> <axis id> <position> ...`
+
+  answer: `Ready`
 
 * Abort any motion
-  request: abort
-  answer Ready
+
+  request: `abort`
+
+  answer `Ready`
 
 * Set velocity of a single axis:
-  request: vel <axis id> <velocity>
-  answer: Ready
+
+  request: `vel <axis id> <velocity>`
+
+  answer: `Ready`
 
 * Set acceleration of a single axis:
-  request: acc <axis id> <acceleration>
-  answer: Ready
+
+  request: `acc <axis id> <acceleration>`
+
+  answer: `Ready`
 
 * Set deceleration of a single axis:
-  request: dec <axis id> <deceleration>
-  answer: Ready
+
+  request: `dec <axis id> <deceleration>`
+
+  answer: `Ready`
 
 #### Detector
 
 Query commands:
 
 * Query detector exposure time:
-  request: ?acq_exposure_time
-  answer: acq_exposure_time <time in seconds>
-  example: ?acq_exposure_time' -> acq_exposure_time 1.0
+
+  request: `?acq_exposure_time`
+
+  answer: `acq_exposure_time <time in seconds>
+
+  example: `?acq_exposure_time` -> `acq_exposure_time 1.0`
 
 * Query detector saving directory:
-  request: ?acq_saving_directory
-  answer: acq_saving_directory <absolute path or empty string if no saving>
-  example: ?acq_saving_directory' -> acq_saving_directory /tmp/sardana
+
+  request: `?acq_saving_directory`
+
+  answer: `acq_saving_directory <absolute path or empty string if no saving>`
+
+  example: `?acq_saving_directory` -> `acq_saving_directory /tmp/sardana`
 
 * Query detector image file name pattern (recognizes one variable: image_nb):
-  request: ?acq_image_name
-  answer: acq_image_name <image file name pattern>
-  example: ?acq_image_name' -> acq_image_name image-{image_nb:03d}.h5
+
+  request: `?acq_image_name`
+
+  answer: `acq_image_name <image file name pattern>`
+
+  example: `?acq_image_name' -> acq_image_name image-{image_nb:03d}.h5`
 
 * Query detector status (possible values: 'Ready', 'Acquiring', 'Readout', 'Saving')
-  request: ?acq_status
-  answer: acq_status <detector status>
-  example: ?acq_status' -> acq_status Ready
+
+  request: `?acq_status`
+
+  answer: `acq_status <detector status>`
+
+  example: `?acq_status` -> `acq_status Ready`
 
 * Query detector last recorded image file name (returns absolute path)
-  request: ?acq_last_image_file_name
-  answer: acq_last_image_file_name <detector last image file name>
-  example: ?acq_last_image_file_name' -> acq_last_image_file_name /tmp/sardana/image-004.h5
+
+  request: `?acq_last_image_file_name`
+
+  answer: `acq_last_image_file_name <detector last image file name>`
+
+  example: `?acq_last_image_file_name` -> `acq_last_image_file_name /tmp/sardana/image-004.h5`
 
 Commands:
 
 * Set detector exposure time:
-  request: acq_exposure_time <time in seconds>
-  answer: OK
+
+  request: `acq_exposure_time <time in seconds>`
+
+  answer: `Ready`
 
 * Set detector saving directory:
-  request: acq_saving_directory <absolute path or empty string if no saving>
-  answer: OK
+
+  request: `acq_saving_directory <absolute path or empty string if no saving>
+
+  answer: `Ready`
 
 * Set detector image file name pattern (recognizes one variable: image_nb):
-  request: acq_image_name <image file name pattern>
+
+  request: `acq_image_name <image file name pattern>`
+
+  answer: `Ready`
 
 * Prepare detector for acquisition (must be called before each `acq_start`)
-  request: acq_prepare
+
+  request: `acq_prepare`
+
+  answer: `Ready`
 
 * Start detector acquisition
-  request: acq_start
+
+  request: `acq_start`
+
+  answer: `Ready`
 
 * Stop detector acquisition
-  request: acq_stop
 
+  request: `acq_stop`
 
+  answer: `Ready`
 
 ## Notes
 
