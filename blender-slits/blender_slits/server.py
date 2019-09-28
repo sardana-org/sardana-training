@@ -141,7 +141,7 @@ def execute_motor_cmd(cmd, config):
 
 def execute_detector_cmd(cmd, config):
     detector = config['detector']
-    if cmd == '?acq_image':
+    if cmd == '?acq_last_image':
         data = detector.last_image_acquired
         import pickle
         data = pickle.dumps(data)
@@ -285,4 +285,3 @@ def run():
     motor_ctrl_server.stop()
     det_ctrl_server.stop()
     return 0
-

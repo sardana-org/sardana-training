@@ -54,12 +54,10 @@ Communicates via TCP/UP socket on ports:
 * 9999 (motion control) and
 * 9998 (detector control)
 
-#### Common
-
 Communication protocol is ASCII based on request-reply semantics.
 
 Commands must end with newline character (ASCII code 10).
-Replies always end with (ASCII code 10). New line is omitted in the
+Replies always end with newline (ASCII code 10). New line is omitted in the
 description below for better understanding only.
 
 Commands that were accepted reply with:
@@ -205,6 +203,13 @@ Query commands:
   answer: `acq_last_image_file_name <detector last image file name>`
 
   example: `?acq_last_image_file_name` -> `acq_last_image_file_name /tmp/sardana/image-004.h5`
+
+* Query detector last recorded image data
+
+  request: `?acq_last_image`
+
+  answer: binary data. First 8 characters are ASCII representing size of binary
+  data that follows. The next bytes are a python pickle dump of either a numpy array representing the 2D data or None if no image has ever been acquired. 
 
 Commands:
 

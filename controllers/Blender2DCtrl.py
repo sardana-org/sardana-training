@@ -88,7 +88,7 @@ class BlenderDetector:
 
     @property
     def last_image(self):
-        self._socket.sendall(b'?acq_image\n')
+        self._socket.sendall(b'?acq_last_image\n')
         size = int(self._socket.recv(8))
         data, n = [], 0
         while n < size:
