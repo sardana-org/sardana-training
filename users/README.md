@@ -10,15 +10,13 @@ We recommend reviewing these materials in the following order:
 1. Introduction
 2. Overview
 3. Sardana from scratch
-4. Pool
-5. Controllers
-6. Macros1
-7. Macros2
-8. Macros3
-9. Taurusgui
-10. Tauruscore1
-10. Tauruscore2
+4. Controllers - motion
+5. Controllers - acquisition
+6. Macros overview
+7. Macros howto
+8. Taurusgui
+9. What's else
 
-See [AGENDA](https://github.com/sardana-org/sardana-training/blob/master/users/AGENDA.md) for more datails on the contents of the training.
+See [AGENDA](https://github.com/sardana-org/sardana-followup/blob/master/20191006-ICALEPCS/AGENDA.md) for more datails on the contents of the training.
 
 See the top project [README](https://github.com/sardana-org/sardana-training/blob/master/README.md) if you have problems with visualizing of the materials.
