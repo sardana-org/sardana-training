@@ -70,7 +70,14 @@ export LANG=C.UTF-8
 
 # install tools used in the training
 apt-get install -y blender \
-                   wget
+                   wget \
+                   spyder \
+                   emacs \
+                   vim \
+                   okular
+
+# install virtualevn for installation of silx
+apt-get install -y virtualenv
 
 # configure PATH to point to pip user installation dir 
 echo "export PATH=/home/vagrant/.local/bin:$PATH" >> /home/vagrant/.bashrc
