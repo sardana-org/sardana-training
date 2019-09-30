@@ -47,6 +47,33 @@ $ blender-slits-server
  $ python client.py
 ```
 
+### Test with a simple client
+
+You can use `nc` linux tool:
+
+```console
+$ nc 0 9999
+?pos top
+pos top 20
+?move top 10
+Ready
+```
+
+(replace *0* with hostname if you are running the client on a different machine)
+
+**Pro tip**: install `rlwrap` command line tool and run `rlwrap nc 0 9999`.
+This will enpower `nc` with readline capabilites like history and command completion ;-)
+
+The same from python:
+
+```python
+>>> import socket
+>>> sock = socket.create_connection(('0', 9999))
+>>> sock.sendall(b'?pos top\n')
+>>> print(sock.recv(1024))
+'pos top 10.0\n'
+```
+
 ### Communication protocol
 
 Communicates via TCP/UP socket on ports:
@@ -209,7 +236,7 @@ Query commands:
   request: `?acq_last_image`
 
   answer: binary data. First 8 characters are ASCII representing size of binary
-  data that follows. The next bytes are a python pickle dump of either a numpy array representing the 2D data or None if no image has ever been acquired. 
+  data that follows. The next bytes are a python pickle dump of either a numpy array representing the 2D data or None if no image has ever been acquired.
 
 Commands:
 
