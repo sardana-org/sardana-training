@@ -1,4 +1,4 @@
-apt-get update
+gpt-get update
 
 
 # change installation dialogs policy to noninteractive
@@ -54,16 +54,12 @@ apt-get install -y python3-qtconsole \
                    python3-matplotlib \
                    ipython3  # to have launcher of ipython
 
-pip3 install git+https://github.com/taurus-org/taurus_pyqtgraph.git
-pip3 install --no-deps h5py==2.10  # to have VDS
+pip3 install --user --no-deps git+https://github.com/taurus-org/taurus_pyqtgraph.git
+pip3 install --user --no-deps h5py==2.10  # to have VDS
 
 
-# TODO: install in user mode with vagrant user
-pip3 install --user --no-deps git+https://github.com/taurus-org/taurus.git@develop
+# For taurus 
 echo "export QT_API=pyqt5" >> /home/vagrant/.bashrc
-
-# TODO: install in user mode with vagrant user
-pip3 install --no-deps git+https://github.com/sardana-org/sardana.git@develop
 
 # Change locale from POSIX to C.UTF-8 due to taurus-org/taurus#836
 export LANG=C.UTF-8
@@ -85,6 +81,8 @@ echo "export PATH=/home/vagrant/.local/bin:$PATH" >> /home/vagrant/.bashrc
 # install KDE desktop
 apt-get install -y kde-plasma-desktop
 
+# clone training materials
+git clone https://github.com/sardana-org/sardana-training.git /home/vagrant/sardana-training
 # Manual steps:
 # 1. Install silx due to a bug in buster package on KDE env:
 #
