@@ -84,3 +84,15 @@ echo "export PATH=/home/vagrant/.local/bin:$PATH" >> /home/vagrant/.bashrc
 
 # install KDE desktop
 apt-get install -y kde-plasma-desktop
+
+# Manual steps:
+# 1. Install silx due to a bug in buster package on KDE env:
+#
+# mkdir ~/.local/bin
+# vi ~/,local/bin/silx (source /home/vagrant/silx-venv/bin/activate; silx "$@";)
+# chmod 755 .local/bin/silx
+# virtualenv -p /usr/bin/python3 silx-venv
+# source silx-venv/bin/activate
+# pip3 install python-dateutil matplotlib PyQt5 silx
+#
+# 2. Disable screen lock (may hang VM)
