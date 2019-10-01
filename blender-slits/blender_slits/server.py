@@ -259,6 +259,8 @@ def run():
     config['left'].startMotion(0, -20)
     config['right'].startMotion(0, 20)
 
+    bge.logic.NextFrame()
+        
     motor_cmd_func = functools.partial(execute_motor_cmd, config=config)
     def handle_motor_ctrl(sock, addr):
         handle_sock(sock, addr, motor_cmd_func)
