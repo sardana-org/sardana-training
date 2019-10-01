@@ -255,8 +255,8 @@ def run():
 
     # MOVE TO START POSITION
     config['top'].startMotion(0, 20)
-    config['bot'].startMotion(0, -50)
-    config['left'].startMotion(0, -50)
+    config['bot'].startMotion(0, -20)
+    config['left'].startMotion(0, -20)
     config['right'].startMotion(0, 20)
 
     motor_cmd_func = functools.partial(execute_motor_cmd, config=config)
