@@ -93,7 +93,7 @@ class BlenderBladesMotorController(MotorController):
         ans = blender_blades.ask("?state {0}".format(axis_name))
         state_raw = ans.split()[self.VALUE]
         state = self.STATES[state_raw]
-        limit_switches = MotorController.NoLimitSwitch
+        limit_switches = MotorController.NoLimitSwitch  # no limits are active
         return state, limit_switches
 
     def ReadOne(self, axis):
