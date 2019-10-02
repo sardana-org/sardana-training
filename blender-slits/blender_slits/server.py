@@ -282,7 +282,9 @@ def run():
 
     try:
         while True:
-            update_frame(config)
+            if update_frame(config):
+                log.info('Window closed. Bailing out!')
+                break
             gevent.sleep(1/30)
     except KeyboardInterrupt:
         log.info('Ctrl-C pressed. Bailing out!')
