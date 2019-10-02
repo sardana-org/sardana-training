@@ -18,6 +18,7 @@ along with Sardana-Training.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import time
+
 from sardana import State
 from sardana.pool.controller import CounterTimerController, Type,\
     Description, DefaultValue
@@ -51,9 +52,6 @@ class NetworkTrafficCounterTimerController(CounterTimerController):
         self.acq_end_time = time.time()
         self.start_counts = 0
 
-    def LoadOne(self, axis, value):
-        self.acq_time = value
-
     def StateOne(self, axis):
         state = State.On
         if time.time() < self.acq_end_time:
@@ -61,6 +59,9 @@ class NetworkTrafficCounterTimerController(CounterTimerController):
         # due to sardana-org/sardana #621 we need to return also status
         status_string = 'My custom status info'
         return state, status_string
+
+    def LoadOne(self, axis, value):
+        self.acq_time = value
 
     def StartOne(self, axis, _):
         self.acq_end_time = time.time() + self.acq_time
