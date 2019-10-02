@@ -275,6 +275,7 @@ def run():
     det_ctrl_server = gevent.server.StreamServer(('0', 9998),
                                                  handle_det_ctrl)
 
+    log.info('Running blender %s', bge.app.version_string)
     motor_ctrl_server.start()
     det_ctrl_server.start()
     log.info("Ready to accept requests!")
