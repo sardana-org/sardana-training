@@ -237,6 +237,10 @@ def configure():
     m_right.blender = right
     motors = dict(top=m_top, bot=m_bot, left=m_left, right=m_right)
 
+    bge.render.showMouse(True)
+    bge.render.showFramerate(True)
+    bge.render.showProfile(True)
+    log.info('%s', bge.logic.getLogicTicRate())
     return dict(motors, motors=motors, detector=detector)
 
 
