@@ -70,7 +70,8 @@ apt-get install -y blender \
                    spyder \
                    emacs \
                    vim \
-                   okular
+                   okular \
+                   firefox
 
 # install virtualevn for installation of silx
 apt-get install -y virtualenv
@@ -80,6 +81,9 @@ echo "export PATH=/home/vagrant/.local/bin:$PATH" >> /home/vagrant/.bashrc
 
 # install KDE desktop
 apt-get install -y kde-plasma-desktop
+
+# don't eliminate /tmp directory (by default environment is stored there)
+echo "d /tmp 1777 root root -" > /etc/tmpfiles.d/tmp.conf
 
 # clone training materials
 git clone https://github.com/sardana-org/sardana-training.git /home/vagrant/sardana-training
