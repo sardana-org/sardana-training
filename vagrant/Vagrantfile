@@ -9,6 +9,18 @@ Vagrant.configure("2") do |config|
     vb.name = "sardana-icalepcs2019"
     # Disable Guest Additions update
     config.vbguest.auto_update = false
+    # Increase Video Memory
+    vb.customize ["modifyvm", :id, "--vram", "10"]
+    # Add IDE controller (for optical drive)
+    vb.customize ["storagectl", :id,
+                  "--name", "IDE",
+                  "--add", "ide"]
+    # Add optical drive
+    vb.customize ["storageattach", :id,
+                  "--storagectl", "IDE",
+                  "--port", "0", "--device", "1",
+                  "--type", "dvddrive",
+                  "--medium", "emptydrive"]
   end
   config.vm.provision "shell", path: "provision.sh"
 end

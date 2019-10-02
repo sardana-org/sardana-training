@@ -91,7 +91,7 @@ git clone https://github.com/sardana-org/sardana-training.git /home/vagrant/sard
 # 1. Install silx due to a bug in buster package on KDE env:
 #
 # mkdir ~/.local/bin
-# vi ~/,local/bin/silx (source /home/vagrant/silx-venv/bin/activate; silx "$@";)
+# vi ~/.local/bin/silx (#!/usr/bin/bash; source /home/vagrant/silx-venv/bin/activate; silx "$@";)
 # chmod 755 .local/bin/silx
 # virtualenv -p /usr/bin/python3 silx-venv
 # source silx-venv/bin/activate
