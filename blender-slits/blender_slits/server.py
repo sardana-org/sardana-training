@@ -202,12 +202,11 @@ def execute_detector_cmd(cmd, config):
 def update_frame(config):
     top, bot, left, right = config['top'], config['bot'], config['left'], config['right']
     motions = any(map(Motion.isInMotion, (top, bot, left, right)))
-    if motions:
-        top.blender.localPosition[2] = top.getCurrentPosition() / 10.0
-        bot.blender.localPosition[2] = bot.getCurrentPosition() / 10.0
-        left.blender.localPosition[0] = left.getCurrentPosition() / 10.0
-        right.blender.localPosition[0] = right.getCurrentPosition() / 10.0
-        bge.logic.NextFrame()
+    top.blender.localPosition[2] = top.getCurrentPosition() / 10.0
+    bot.blender.localPosition[2] = bot.getCurrentPosition() / 10.0
+    left.blender.localPosition[0] = left.getCurrentPosition() / 10.0
+    right.blender.localPosition[0] = right.getCurrentPosition() / 10.0
+    return bge.logic.NextFrame()
 
 
 def configure():
