@@ -18,7 +18,10 @@ along with Sardana-Training.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import time
-from sardana.pool.controller import CounterTimerController
+
+from sardana import State
+from sardana.pool.controller import CounterTimerController, Type,\
+    Description, DefaultValue
 
 
 def read_network_counts(interface):
@@ -34,25 +37,43 @@ class NetworkTrafficCounterTimerController(CounterTimerController):
     It counts the number of bytes of data transmitted or received by a network
     interface over the integration time.
     """
+    default_timer = 1
+    
+    #ctrl_properties = {
+        #'interface': {Type: str,
+                      #Description: 'network interface to count packages',
+                      #DefaultValue: 'eno1'},
+    #}
+        
     def __init__(self, inst, props, *args, **kwargs):
         CounterTimerController.__init__(self,inst,props, *args, **kwargs)
-
-    def LoadOne(self, axis, value):
+        #self.acq_time = 1.
+        #self.acq_end_time = time.time()
+        #self.start_counts = 0
+    
+    def StateOne(self, axis):
+        #state = State.On
+        #if time.time() < self.acq_end_time:
+            #state = State.Moving
+        ## due to sardana-org/sardana #621 we need to return also status
+        #status_string = 'My custom status info'
+        #return state, status_string
         pass
 
-    def StateOne(self, axis):
-        # due to sardana-org/sardana #621 we need to return also status
+    def LoadOne(self, axis, value):
+        #self.acq_time = value
         pass
 
     def StartOne(self, axis, _):
-        pass
-
-    # due to sardana-org/sardana #622 we need to implement StartAll
-    def StartAll(self):
+        #self.acq_end_time = time.time() + self.acq_time
+        #self.start_counts = read_network_counts(self.interface)
         pass
 
     def ReadOne(self, axis):
+        #counts = read_network_counts(self.interface)
+        #return counts - self.start_counts
         pass
 
     def AbortOne(self, axis):
+        #self.acq_end_time = time.time()
         pass
