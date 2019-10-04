@@ -1,0 +1,29 @@
+JDFile v11 {
+  Global {
+  }
+  JDImage {
+    summit:3,0,1796,785
+    origin:900,393
+    lineWidth:0
+    name:"Image"
+    file_name:"demoBL.png"
+  }
+  JDRectangle {
+    summit:175,221,228,389
+    origin:202,305
+    lineWidth:4
+    name:"/monitor"
+  }
+  JDRectangle {
+    summit:760,188,899,367
+    origin:830,278
+    lineWidth:3
+    name:"/slit"
+  }
+  JDRectangle {
+    summit:940,205,1123,445
+    origin:1032,368
+    lineWidth:3
+    name:"/mirror"
+  }
+}
