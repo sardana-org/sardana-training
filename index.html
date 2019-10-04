@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
 
-<title>all slides</title>
+<title>sardana-training slides</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -13223,11 +13223,9 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </li>
 <li><p>Run the VM</p>
 <ul>
-<li>Import <code>sardana-icalepcs2019.ova</code> with VirtualBox</li>
-<li>Add optical drive (for Guest Additions)</li>
+<li>Import <code>sardana-icalepcs2019.ova</code> with VirtualBox (VirtualBox -&gt; File -&gt; Import Appliance)</li>
 <li>Start the VM</li>
-<li>Log in with user <code>vagrant</code> &amp; password <code>vagrant</code></li>
-<li>Install Guest Additions (for shared clipboard): <code>sh /media/cdrom0/VBoxLinuxAdditions.run</code></li>
+<li>Log in with user <strong><code>vagrant</code></strong> &amp; password <strong><code>vagrant</code></strong></li>
 </ul>
 </li>
 <li><p>If you want to recreate this environment, or just view it in details, please check the <a href="https://github.com/sardana-org/sardana-training/tree/icalepcs2019/vagrant">Vagrantfile</a></p>
@@ -13241,56 +13239,11 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="We-will-follow-the-Sardana-training-materials-(users)">We will follow the Sardana training materials (users)<a class="anchor-link" href="#We-will-follow-the-Sardana-training-materials-(users)">&#182;</a></h1><ul>
-<li>Download the latest version of this training files (in the VM just update: <code>git pull</code>):
-<pre><code>git clone https://github.com/sardana-org/sardana-training.git</code></pre>
+<li>Download the latest version of this training files
+<pre><code>cd ~/sardana-training
+git pull</code></pre>
 </li>
 </ul>
-
-</div>
-</div>
-</div></section></section><section><section>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Other-resources-to-be-used-during-the-workshop">Other resources to be used during the workshop<a class="anchor-link" href="#Other-resources-to-be-used-during-the-workshop">&#182;</a></h1><h2 id="Main-pages:">Main pages:<a class="anchor-link" href="#Main-pages:">&#182;</a></h2><p>Main access point to documentation and projects:</p>
-<ul>
-<li>Taurus home page: <a href="http://www.taurus-scada.org">http://www.taurus-scada.org</a></li>
-<li>Sardana home page: <a href="http://www.sardana-controls.org">http://www.sardana-controls.org</a></li>
-</ul>
-
-</div>
-</div>
-</div></section><section>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Project-pages">Project pages<a class="anchor-link" href="#Project-pages">&#182;</a></h2><p>For downloading the latest code, reporting issues, ask questions and contribute:</p>
-<ul>
-<li>Taurus: <a href="https://github.com/taurus-org/taurus">https://github.com/taurus-org/taurus</a></li>
-<li>Sardana: <a href="https://github.com/sardana-org/sardana">https://github.com/sardana-org/sardana</a></li>
-<li>Sardana Plugins Catalogue: <a href="https://github.com/sardana-org/sardana-plugins">https://github.com/sardana-org/sardana-plugins</a></li>
-</ul>
-
-</div>
-</div>
-</div></section><section>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Enhancement-proposals">Enhancement proposals<a class="anchor-link" href="#Enhancement-proposals">&#182;</a></h2><p>The Sardana and Taurus communities follow the example of the Python and Debian projects and use "Enhancement proposals" for documenting and coordinating the introduction of <em>critical</em> features or workflows that require special discussion. Approved Enhancement Proposals can be found in:</p>
-<ul>
-<li><a href="http://www.taurus-scada.org/tep/?">Taurus Enhancement Proposal (TEP) index</a></li>
-<li><a href="http://www.sardana-controls.org/sep/?">Sardana Enhancement Proposal (SEP) index</a></li>
-</ul>
-
-</div>
-</div>
-</div></section></section><section><section>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Getting-support">Getting support<a class="anchor-link" href="#Getting-support">&#182;</a></h1><p>The <strong>preferred</strong> way of getting support is via GitHub Issues (for <a href="https://github.com/taurus-org/taurus/issues">Taurus</a> and <a href="https://github.com/sardana-org/sardana/issues">Sardana</a>). Use them for asking questions, reporting bugs, suggesting features,... etc</p>
-<p>There also exist mailing lists (<a href="https://sourceforge.net/p/tauruslib/mailman/">taurus</a> / <a href="https://sourceforge.net/p/sardana/mailman/">sardana</a>), but they should be used mostly for announcements and for coordination between developers.</p>
 
 </div>
 </div>
@@ -13342,7 +13295,8 @@ Additional installable files (.wheel, .msi, .deb, etc.) may also be released on 
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="How-to-install-Sardana-Suite">How to install Sardana Suite<a class="anchor-link" href="#How-to-install-Sardana-Suite">&#182;</a></h1><h2 id="Taurus"><a href="http://www.taurus-scada.org/users/getting_started.html#installing">Taurus</a><a class="anchor-link" href="#Taurus">&#182;</a></h2><ul>
+<h1 id="How-to-install-Sardana-Suite">How to install Sardana Suite<a class="anchor-link" href="#How-to-install-Sardana-Suite">&#182;</a></h1><h2 id="Taurus"><a href="http://www.taurus-scada.org/users/getting_started.html#installing">Taurus</a><a class="anchor-link" href="#Taurus">&#182;</a></h2><p>(don't execute the following commands)</p>
+<ul>
 <li><a href="https://packages.debian.org/search?keywords=python-taurus">Debian Packages</a>
 <pre><code>apt-get install python-taurus</code></pre>
 </li>
@@ -13406,7 +13360,8 @@ pip3 install -e ./taurus</code></pre>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="How-to-install-Sardana-Suite">How to install Sardana Suite<a class="anchor-link" href="#How-to-install-Sardana-Suite">&#182;</a></h1><h2 id="Sardana"><a href="http://www.sardana-controls.org/users/getting_started/installing.html#installing">Sardana</a><a class="anchor-link" href="#Sardana">&#182;</a></h2><ul>
+<h1 id="How-to-install-Sardana-Suite">How to install Sardana Suite<a class="anchor-link" href="#How-to-install-Sardana-Suite">&#182;</a></h1><h2 id="Sardana"><a href="http://www.sardana-controls.org/users/getting_started/installing.html#installing">Sardana</a><a class="anchor-link" href="#Sardana">&#182;</a></h2><p>(don't execute the following commands)</p>
+<ul>
 <li><a href="https://packages.debian.org/search?keywords=python-sardana">Debian Packages</a>
 <pre><code>apt-get install python-sardana</code></pre>
 </li>
@@ -13559,19 +13514,7 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <pre><code>/usr/lib/tango/TangoTest test</code></pre>
 </li>
 </ul>
-<h2 id="Instantiate-the-Sardana-Tango-Device-Server">Instantiate the Sardana Tango Device Server<a class="anchor-link" href="#Instantiate-the-Sardana-Tango-Device-Server">&#182;</a></h2>
-<pre><code>Sardana demo1</code></pre>
-<h2 id="Run-Spock---Create-Elements">Run Spock - Create Elements<a class="anchor-link" href="#Run-Spock---Create-Elements">&#182;</a></h2><ul>
-<li><p>Run <strong>spock</strong> CLI:</p>
-
-<pre><code>spock</code></pre>
-</li>
-<li><p>Create <strong>Sardana demo elements</strong> (from spock):</p>
-
-<pre><code>sar_demo</code></pre>
-</li>
-</ul>
-
+<h2 id="Assumes-sar_demo-environment-running">Assumes <code>sar_demo</code> environment running<a class="anchor-link" href="#Assumes-sar_demo-environment-running">&#182;</a></h2>
 </div>
 </div>
 </div></section></section><section><section>
@@ -13625,7 +13568,7 @@ pip3 install --user /home/vagrant/demogui</code></p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="TAURUS-GUI-FEATURES">TAURUS GUI FEATURES<a class="anchor-link" href="#TAURUS-GUI-FEATURES">&#182;</a></h1><h2 id="Playing-with-foogui:-Adding-panels,-loading-perspectives,-etc.">Playing with foogui: Adding panels, loading perspectives, etc.<a class="anchor-link" href="#Playing-with-foogui:-Adding-panels,-loading-perspectives,-etc.">&#182;</a></h2>
+<h1 id="TAURUS-GUI-FEATURES">TAURUS GUI FEATURES<a class="anchor-link" href="#TAURUS-GUI-FEATURES">&#182;</a></h1><h2 id="Playing-with-demogui:-Adding-panels,-loading-perspectives,-etc.">Playing with demogui: Adding panels, loading perspectives, etc.<a class="anchor-link" href="#Playing-with-demogui:-Adding-panels,-loading-perspectives,-etc.">&#182;</a></h2>
 </div>
 </div>
 </div></section><section>
@@ -13705,7 +13648,12 @@ This should  show the "/monitor" panel. Move it to a tab together with "/mirror"
 </li>
 </ul>
 </li>
-<li>Move the gap01 motor in the "/slit" panel</li>
+<li>Move the mot01 and gap01 motors in the "/slit" panel using the <em>motor widget</em><ul>
+<li>note the changing state of physical and pseduo motors</li>
+<li>show absolute and relative mode of move</li>
+<li>stop button and attributes dialogue (context menu -&gt; Tango Attributes)</li>
+</ul>
+</li>
 <li>Save a perspective called <code>instruments</code></li>
 <li>Switch back and forth perspectives <code>macros</code> and <code>instruments</code></li>
 </ul>
@@ -13772,7 +13720,7 @@ This should  show the "/monitor" panel. Move it to a tab together with "/mirror"
 <li>Add a new element to the "form" form panel:<ul>
 <li>Navigate in the db panel to <code>sys/tg_test/1/ampli</code>, and drag and drop it into "form". </li>
 <li>Navigate in the db panel to <code>sys/tg_test/1/boolean_scalar</code>, and drag and drop it into "form"</li>
-<li>Navigate in the db panel to <code>sys/tg_test/1/wave</code>, and drag and drop it into "form"</li>
+<li>Navigate in the db panel to <code>sys/tg_test/1/wave</code>, and drag and drop it into "plot"</li>
 </ul>
 </li>
 </ul>
@@ -13790,7 +13738,8 @@ This should  show the "/monitor" panel. Move it to a tab together with "/mirror"
 <li>right click label of "ampli" and select Change label to "voltage"
 Note that this is a change at the <strong>widget</strong> level</li>
 <li>right-click label of "voltage" and select "Configurations-&gt;All" and set unit to "millivolts" and exit config dialog. 
-Note that this is a change at the <strong>Tango Attribute</strong> level!</li>
+<br/>Note that this is a change at the <strong>Tango Attribute</strong> level!
+<br/>Don't worry about the error message. It warns abuot change of the attribute's value from dimensionless/unitless? to millivolts. </li>
 <li>Note the units support: <ul>
 <li>both "ampli" and "voltage" now display "mV"</li>
 <li>if you use the line edit of "voltage" to write <code>1V</code>, the value will change to 1000 mV in both "ampli" and "voltage"</li>
@@ -13847,18 +13796,66 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="MeasurementGroup-overview"><a href="http://www.sardana-controls.org/devel/overview/overview_measurementgroup.html">MeasurementGroup overview</a><a class="anchor-link" href="#MeasurementGroup-overview">&#182;</a></h2><ul>
-<li>MeasurementGroup is a high level element whose role is:<ul>
-<li>to coordinate a complex measurement process</li>
+<li>MeasurementGroup is a high level element whose role is to:<ul>
+<li>coordinate a complex measurement process</li>
 <li>provide a simplified interface to it</li>
 </ul>
 </li>
-<li>Run <code>uct</code> macro</li>
-<li>Open <code>expconf</code> in Spock</li>
-<li>Disable some channels and run <code>ct</code> macro</li>
+<li>Run <code>uct</code> macro in Spock
+<pre><code>uct</code></pre>
+</li>
+<li>Open <code>expconf</code> in Spock
+<pre><code>expconf</code></pre>
+</li>
+<li>Disable some channels in the <code>expconf</code> e.g. <code>ct02</code> and <code>ct04</code> (Enabled column -&gt; False) and run <code>ct</code> macro in spock:
+<pre><code>ct</code></pre>
+</li>
 <li>Briefly review other configuration parameters</li>
-<li>Add 1D channel <code>oned01</code>, apply changes and run <code>ct</code> macro</li>
-<li>Create new measurement group in spock: <code>defmeas mntgrp02 ct01 twod01</code> and run <code>ct</code> macro</li>
-<li>Change active measurement group in expconf and run <code>ct</code> macro  </li>
+<li>Add 1D channel <code>oned01</code> in <code>expconf</code> (Add channel <code>+</code> button), apply changes and run <code>ct</code> macro</li>
+<li>Create new measurement group using the <code>defmeas</code> macro in Spock and run <code>ct</code> afterwards:
+<pre><code>defmeas mntgrp02 ct01 twod01
+ct</code></pre>
+<ul>
+<li>Note the <em>external changes</em> pop-up.</li>
+</ul>
+</li>
+<li>Change active measurement group in expconf and run <code>ct</code> macro</li>
+</ul>
+
+</div>
+</div>
+</div></section></section><section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Generic-Scan-Framework---demo">Generic Scan Framework - demo<a class="anchor-link" href="#Generic-Scan-Framework---demo">&#182;</a></h2><ul>
+<li>Precise software synchronized continuous scans require intensive monitoring loops. Increase the frequency of position checks (in Spock) and restart the Sardana server:
+<pre><code>Pool_demo1_1.put_property({"MotionLoop_StatesPerPosition":"1"})</code></pre>
+</li>
+<li>Start taurustrend with high frequency of polling (in bash):
+<pre><code>taurus tpg trend mot01/position "eval:int(bool({ct01/state}))"</code></pre>
+<ul>
+<li>Configure <em>Forced read</em> period of 10 ms </li>
+<li>Configure fill area of the state curve and move it to y2 axis in <em>Plot configuration</em></li>
+</ul>
+</li>
+<li>Demonstrate step scan in Spock:
+<pre><code>ascan mot01 0 10 10 1</code></pre>
+</li>
+<li>Demonstrate continuous scan with no latency time in Spock:
+<pre><code>ascanct mot01 0 10 10 1</code></pre>
+</li>
+<li>Demonstrate continuous scan with 100 ms latency time (in spock):
+<pre><code>ascanct mot01 0 10 10 1 0.1</code></pre>
+</li>
+<li>Configure hardware synchronization for <code>ct01</code> in <code>expconf</code> (<em>Synchronizer</em> column -&gt; <code>tg01</code>) and execute the scan without latency
+time:
+<pre><code>ascanct mot01 0 10 10 1</code></pre>
+<ul>
+<li>Note about cooexistence of software and hardware synchronization modes in the same scan</li>
+<li>Note the continuous <em>moving</em> state of the <code>ct01</code></li>
+</ul>
+</li>
 </ul>
 
 </div>
@@ -13882,28 +13879,6 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Generic-Scan-Framework---demo">Generic Scan Framework - demo<a class="anchor-link" href="#Generic-Scan-Framework---demo">&#182;</a></h2><ul>
-<li>Precise software synchronized continuous scans require intensive monitoring loops. Increase the frequency of position checks (in spock) and restart the Sardana server:
-<pre><code>Pool_demo_1.put_property({"MotionLoop_StatesPerPosition":"1"})</code></pre>
-</li>
-<li>Start taurustrend with high frequency of polling (in bash):<code>taurus tpg trend mot01/position "eval:int(bool({ct01/state}))"</code><ul>
-<li>Configure <em>Forced read</em> period of 10 ms </li>
-<li>Configure fill area of the state curve and move it to y2 axis in <em>Plot configuration</em></li>
-</ul>
-</li>
-<li>Configure long acceleration and deceleration times (in spock): <code>mot01.acceleration = 2</code> and <code>mot01.deceleration = 2</code></li>
-<li>Demonstrate step scan (in spock): <code>ascan mot01 0 10 10 1</code></li>
-<li>Demonstrate continuous scan with no latency time (in spock): <code>ascanct mot01 0 10 10 1</code></li>
-<li>Demonstrate continuous scan with 100 ms latency time (in spock): <code>ascanct mot01 0 10 10 1 0.1</code></li>
-<li>Configure hardware synchronization in expconf.</li>
-</ul>
-
-</div>
-</div>
-</div></section></section><section><section>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Recorders"><a href="http://www.sardana-controls.org/devel/howto_recorders.html#writing-recorders">Recorders</a><a class="anchor-link" href="#Recorders">&#182;</a></h2><p><img src="res/recorders.png" alt="Sardana data flow"></p>
 
 </div>
@@ -13914,7 +13889,7 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Recorders---demo">Recorders - demo<a class="anchor-link" href="#Recorders---demo">&#182;</a></h2><h3 id="Demonstrate-recorder-selection-based-on-the-file-extension">Demonstrate recorder selection based on the file extension<a class="anchor-link" href="#Demonstrate-recorder-selection-based-on-the-file-extension">&#182;</a></h3><ul>
 <li>In spock start <code>expconf</code></li>
-<li>Set scan file to <code>test.h5</code> and directory to <code>/tmp</code> (equivalent in Spock with <code>senv ScanFile test.h5</code> and <code>senv ScanDir /tmp</code>)</li>
+<li>In <code>expconf</code> <em>Storage</em> tab set scan file to <code>test.h5</code> and directory to <code>/tmp</code> (equivalent in Spock with <code>senv ScanFile test.h5</code> and <code>senv ScanDir /tmp</code>)</li>
 <li>Execute a scan: <code>ascan mot01 0 2 2 0.1</code></li>
 <li>Access to the data with <code>silx</code></li>
 <li>Close the <code>silx</code></li>
@@ -14041,9 +14016,12 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Logging-in-macros---demo">Logging in macros - demo<a class="anchor-link" href="#Logging-in-macros---demo">&#182;</a></h3><ul>
-<li>Edit <code>move</code> macro and instead of <code>self.output</code> use <code>self.info</code></li>
+<li>Edit <code>hello_world</code> macro and add a <code>self.info("How are you?")</code><ul>
+<li>Note about change of the color in Spock</li>
+</ul>
+</li>
 <li><code>wa</code> (table view)</li>
-<li><code>umv mot01 10</code> (update block view)</li>
+<li><code>umv mot01 100</code> (update block view)</li>
 </ul>
 
 </div>
@@ -14079,8 +14057,8 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Macro-parameters---development">Macro parameters - development<a class="anchor-link" href="#Macro-parameters---development">&#182;</a></h3><ul>
-<li>Open <code>/home/vagrant/mymacros.py</code> module with an external editor</li>
+<h3 id="Macro-parameters---demo">Macro parameters - demo<a class="anchor-link" href="#Macro-parameters---demo">&#182;</a></h3><ul>
+<li>Open <code>/home/vagrant/macros/mymacros.py</code> module with an external editor</li>
 <li>Develop a new macro: <code>move</code></li>
 <li>Add two macro parameters according to the <a href="https://sardana-controls.org/devel/howto_macros/macros_general.html#adding-parameters-to-your-macro">Adding macro parameters documentation</a><ul>
 <li>moveable of type <code>Moveable</code></li>
@@ -14089,8 +14067,9 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </li>
 <li>Move the motor to the position according to the <a href="https://sardana-controls.org/devel/api/sardana/taurus/core/tango/sardana/pool.html">Moveable API</a> (<code>moveable.move(position)</code>)</li>
 <li>Apply the new code on the server using the <code>relmaclib mymacros</code> macro (in Spock)</li>
+<li>Show the macro help in Spock: <code>move?</code></li>
 <li>Continue developing your macro to print the motor position (<code>moveable.getPosition()</code>)</li>
-<li>Apply the new code on the server using the <code>relmaclib mymacros</code> macro (in Spock)</li>
+<li>Apply the new code on the server using the <code>relmac macro</code> macro (in Spock)</li>
 <li>Run <code>move mot01 10</code></li>
 </ul>
 
@@ -14165,7 +14144,7 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Macro-parameters---repeat-parameters---demo">Macro parameters - repeat parameters - demo<a class="anchor-link" href="#Macro-parameters---repeat-parameters---demo">&#182;</a></h3><ul>
 <li><code>prdef pt4</code></li>
-<li><code>prdef pt5</code></li>
+<li><code>pt4 mot01 mot02</code></li>
 </ul>
 
 </div>
@@ -14239,9 +14218,10 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <h3 id="Sequencing-and-nesting-macros">Sequencing and nesting macros<a class="anchor-link" href="#Sequencing-and-nesting-macros">&#182;</a></h3><ul>
 <li>Graphically using <em>sequencer</em>:<ul>
 <li>Open <code>demogui</code> and show <code>Sequencer</code> panel</li>
-<li>Add macros to the sequence e.g. <code>lsm</code>, <code>ct</code> and <code>ascan</code> and fill their parameters</li>
+<li>Add macros to the sequence e.g. <code>lsm</code>, <code>wa</code> and <code>ascan</code> and fill their parameters</li>
 <li>Start the sequence execution, stop it, pause it, etc..</li>
 <li>Save the sequence to a file and open it back</li>
+<li>Don't close sequencer</li>
 </ul>
 </li>
 </ul>
@@ -14272,8 +14252,20 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Hooks---demo">Hooks - demo<a class="anchor-link" href="#Hooks---demo">&#182;</a></h3><ul>
+<h3 id="Hooks---sequencer">Hooks - sequencer<a class="anchor-link" href="#Hooks---sequencer">&#182;</a></h3><ul>
+<li>Edit the sequence using the arrow buttons and nest the <code>wa</code> macro in the <code>ascan</code></li>
+<li>Set its hook place to <code>pre-acq</code> from the context menu</li>
+</ul>
+
+</div>
+</div>
+</div></section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Hooks---programatically">Hooks - programatically<a class="anchor-link" href="#Hooks---programatically">&#182;</a></h3><ul>
 <li><code>prdef loop</code></li>
+<li><code>loop 0 10 1</code></li>
 <li><code>prdef captain_hook</code></li>
 <li><code>captain_hook 0 10 1</code></li>
 </ul>
@@ -14286,9 +14278,9 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="General-Hooks---demo">General Hooks - demo<a class="anchor-link" href="#General-Hooks---demo">&#182;</a></h3><ul>
 <li><code>lsgh</code></li>
-<li><code>defgh wa pre-acq</code></li>
+<li><code>defgh "wm mot01" pre-acq</code></li>
 <li><code>ct</code></li>
-<li><code>udefgh wa</code></li>
+<li><code>udefgh "wm mot01"</code></li>
 <li><code>ct</code></li>
 </ul>
 
@@ -14418,11 +14410,7 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="MACROBUTTON:-A-GUI-button-to-execute-a-single-macro--&gt;-DEMO">MACROBUTTON: A GUI button to execute a single macro -&gt; DEMO<a class="anchor-link" href="#MACROBUTTON:-A-GUI-button-to-execute-a-single-macro--&gt;-DEMO">&#182;</a></h3><p><strong>Demo</strong> of a macrobutton executed on the container:</p>
-<p>Run spock to see the results:</p>
-
-<pre><code>spock --profile demo1</code></pre>
-<p>Execute the <strong>macrobutton</strong> code, which in this case <strong>executes the 'lsm' macro</strong>, and see the <strong>output of the executed macro in spock</strong>.</p>
+<h3 id="MACROBUTTON:-A-GUI-button-to-execute-a-single-macro--&gt;-DEMO">MACROBUTTON: A GUI button to execute a single macro -&gt; DEMO<a class="anchor-link" href="#MACROBUTTON:-A-GUI-button-to-execute-a-single-macro--&gt;-DEMO">&#182;</a></h3><p>Execute the <strong>macrobutton</strong> code, which in this case <strong>executes the 'lsm' macro</strong></p>
 <ul>
 <li><p>macrobutton executing an lsm macro:</p>
 
@@ -15032,8 +15020,8 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="ZeroD-channels---software-sampling">ZeroD channels - software sampling<a class="anchor-link" href="#ZeroD-channels---software-sampling">&#182;</a></h2><ul>
-<li>Read scalar values but without counting capability</li>
-<li>Read loop with value buffer</li>
+<li>Read scalar values but without controller acqusition capability</li>
+<li>Read loop adds value to the buffer</li>
 <li>Apply custom transformation to the gathered values</li>
 </ul>
 
@@ -15072,7 +15060,7 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Eval-scheme">Eval scheme<a class="anchor-link" href="#Eval-scheme">&#182;</a></h2><ul>
 <li>Evaluate any Python expression and use its value as Taurus data source</li>
-<li>Example: <code>eval:123.4*{tango:sys/tg_test/1/double_scalar}</code></li>
+<li>Example: <code>taurus form eval:123.4*{tango:sys/tg_test/1/double_scalar}</code></li>
 </ul>
 
 </div>
@@ -15196,19 +15184,6 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 
 </div>
 </div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
 </div></section></section>
 </div>
 </div>
