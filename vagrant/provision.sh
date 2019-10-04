@@ -54,8 +54,8 @@ apt-get install -y python3-qtconsole \
                    python3-matplotlib \
                    ipython3  # to have launcher of ipython
 
-pip3 install --user --no-deps git+https://github.com/taurus-org/taurus_pyqtgraph.git
-pip3 install --user --no-deps h5py==2.10  # to have VDS
+pip3 install --no-deps git+https://github.com/taurus-org/taurus_pyqtgraph.git
+pip3 install --no-deps h5py==2.10  # to have VDS
 
 
 # For taurus 
@@ -67,11 +67,12 @@ export LANG=C.UTF-8
 # install tools used in the training
 apt-get install -y blender \
                    wget \
-                   spyder \
                    emacs \
                    vim \
-                   okular \
-                   firefox
+                   okular
+
+# install gevent for blender-slits
+apt-get install python3-gevent
 
 # install virtualevn for installation of silx
 apt-get install -y virtualenv
