@@ -84,7 +84,7 @@ def execute_motor_cmd(cmd, config):
             m.startMotion(p, cmd_v)
         return 'Ready\n'
 
-    if cmd_args[0] in ['acc', 'vel']:
+    if cmd_args[0] in ['acc', 'dec', 'vel']:
         # <acc/vel> <motor> <value>
         cmd_m = motors[cmd_args[1]]
         cmd_v = float(cmd_args[2])
@@ -95,10 +95,13 @@ def execute_motor_cmd(cmd, config):
 
         if cmd.startswith('acc'):
            cmd_m.setAccelerationTime(cmd_v)
+           return 'Ready\n'
+        
+        if cmd.startswith('dec'):
            cmd_m.setDecelerationTime(cmd_v)
            return 'Ready\n'
 
-    if cmd_args[0] in ['?pos', '?state', '?vel', '?acc']:
+    if cmd_args[0] in ['?pos', '?state', '?vel', '?acc', '?dec']:
         cmd_m = motors[cmd_args[1]]
         ans = cmd_args[0][1:]
         ans += ' ' + cmd_args[1]
@@ -111,6 +114,8 @@ def execute_motor_cmd(cmd, config):
                 ans += ' ON'
         if cmd_args[0] == '?acc':
             ans += ' ' + str(cmd_m.getAccelerationTime())
+        if cmd_args[0] == '?dec':
+            ans += ' ' + str(cmd_m.getDecelerationTime())
         if cmd_args[0] == '?vel':
             ans += ' ' + str(cmd_m.getMaxVelocity())
         return ans + '\n'
