@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
 
-<title>sardana-training slides</title>
+<title>index slides</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -13218,7 +13218,7 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <li><p>VM is a Debian Buster</p>
 <ul>
 <li>it contains all Sardana Suite dependencies installed with the official Debian packages</li>
-<li>some other tools which may be installed with PyPI</li>
+<li>some other tools which may be installed from PyPI</li>
 </ul>
 </li>
 <li><p>Run the VM</p>
@@ -13228,7 +13228,31 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <li>Log in with user <strong><code>vagrant</code></strong> &amp; password <strong><code>vagrant</code></strong></li>
 </ul>
 </li>
-<li><p>If you want to recreate this environment, or just view it in details, please check the <a href="https://github.com/sardana-org/sardana-training/tree/icalepcs2019/vagrant">Vagrantfile</a></p>
+<li><p>If you want to recreate this VM, or just view it in details, please check the <a href="https://github.com/sardana-org/sardana-training/tree/icalepcs2019/vagrant">Vagrantfile</a></p>
+</li>
+</ul>
+
+</div>
+</div>
+</div></section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Sardana-VM---last-minute-fixes">Sardana VM - last minute fixes<a class="anchor-link" href="#Sardana-VM---last-minute-fixes">&#182;</a></h2><ul>
+<li>Either use the OVA from the USB or from <a href="TODO">here</a></li>
+<li>Or try to fix it (requires Internet access):<ul>
+<li>Copy <code>h5py</code> and <code>taurus_pyqtgraph</code> from <code>/root/.local/...</code> to <code>~/.local/...</code>:
+<pre><code>cd ~/sardana-training/
+git pull
+sudo ~/sardana-training/users/copy_modules
+python3 -c "import h5py"
+python3 -c "import taurus"</code></pre>
+</li>
+<li>Install <code>gevent</code> and <code>blender</code> (optionally <code>emacs</code> and <code>okular</code>):
+<pre><code>sudo apt-get install -y python3-gevent blender
+sudo apt-get install -y emacs okular</code></pre>
+</li>
+</ul>
 </li>
 </ul>
 
@@ -13243,6 +13267,7 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <pre><code>cd ~/sardana-training
 git pull</code></pre>
 </li>
+<li>Slides are accessible on <a href="https://sardana-org.github.io/sardana-training">https://sardana-org.github.io/sardana-training</a></li>
 </ul>
 
 </div>
@@ -13270,6 +13295,7 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </ul>
 </li>
 <li>Create the workshop enviroment<ul>
+<li>Install Taurus and Sardana</li>
 <li>Create and run Sardana server</li>
 <li>Create profile and run Spock CLI</li>
 <li>Create simulated environment and quick demo</li>
@@ -13435,10 +13461,10 @@ pip3 install -e ./sardana</code></pre>
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <ul>
-<li>Instantiate the <strong>Sardana Tango Device Server</strong>:</li>
-</ul>
-
+<li>Instantiate the <strong>Sardana Tango Device Server</strong>:
 <pre><code>Sardana demo1 --log-level=debug</code></pre>
+</li>
+</ul>
 
 </div>
 </div>
@@ -13458,11 +13484,13 @@ pip3 install -e ./sardana</code></pre>
 <li>CLI based on IPython</li>
 <li>Single point of control - allows to execute macros and control elements</li>
 <li>Allows to work with multiple profiles i.e. connecting to different doors</li>
-</ul>
-<h3 id="Run-spock:">Run spock:<a class="anchor-link" href="#Run-spock:">&#182;</a></h3>
+<li>Run spock:
 <pre><code>spock</code></pre>
-<h3 id="Populate-Sardana-from-Spock:">Populate Sardana from Spock:<a class="anchor-link" href="#Populate-Sardana-from-Spock:">&#182;</a></h3>
+</li>
+<li>Populate <code>sar_demo</code> environment (in Spock):
 <pre><code>sar_demo</code></pre>
+</li>
+</ul>
 
 </div>
 </div>
@@ -13537,7 +13565,7 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <ul>
 <li>Choose the project directory (e.g: <code>/home/vagrant/demogui</code>)</li>
 <li>Choose GUI name (e.g: <code>demogui</code>)</li>
-<li>Add synoptic (optional): <code>/sardana-training/users/res/demoBL.jdw</code></li>
+<li>Add synoptic (optional): <code>/home/vagrant/sardana-training/users/res/demoBL.jdw</code></li>
 <li>Enable Sardana communication (optional): Sardana <code>demo1</code> </li>
 <li>Generate panels from Sardana Pool (optional): choose <code>yes</code> </li>
 <li>We will skip some steps: custom logo, extra panels, Monitor list</li>
@@ -13552,9 +13580,9 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="TAURUS-GUI-INSTALLATION-AND-LAUNCH">TAURUS GUI INSTALLATION AND LAUNCH<a class="anchor-link" href="#TAURUS-GUI-INSTALLATION-AND-LAUNCH">&#182;</a></h3><ul>
-<li><p>Install the freshly created Taurus GUI:
-<code>`
-pip3 install --user /home/vagrant/demogui</code></p>
+<li><p>Install the freshly created Taurus GUI:</p>
+
+<pre><code>pip3 install --user /home/vagrant/demogui</code></pre>
 </li>
 <li><p>Congratulations! You can already run your freshly created GUI:</p>
 
@@ -13631,7 +13659,7 @@ side MacroDescription above and all Door* panels tabbed below)</li>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="TAURUS-GUI-FEATURES---interact-with-instruments-(use-synoptic)">TAURUS GUI FEATURES - interact with instruments (use synoptic)<a class="anchor-link" href="#TAURUS-GUI-FEATURES---interact-with-instruments-(use-synoptic)">&#182;</a></h3><ul>
+<h3 id="TAURUS-GUI-FEATURES---interact-with-instruments-using-synoptic-(I)">TAURUS GUI FEATURES - interact with instruments using synoptic (I)<a class="anchor-link" href="#TAURUS-GUI-FEATURES---interact-with-instruments-using-synoptic-(I)">&#182;</a></h3><ul>
 <li>Reorder the widgets for "interaction with instruments":<ul>
 <li>Go to Panels -&gt; hide all panels</li>
 <li>Click on the "demoBL" button in the toolbar to show the synoptic panel</li>
@@ -13648,6 +13676,15 @@ This should  show the "/monitor" panel. Move it to a tab together with "/mirror"
 </li>
 </ul>
 </li>
+</ul>
+
+</div>
+</div>
+</div></section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="TAURUS-GUI-FEATURES---interact-with-instruments-using-synoptic-(II)">TAURUS GUI FEATURES - interact with instruments using synoptic (II)<a class="anchor-link" href="#TAURUS-GUI-FEATURES---interact-with-instruments-using-synoptic-(II)">&#182;</a></h3><ul>
 <li>Move the mot01 and gap01 motors in the "/slit" panel using the <em>motor widget</em><ul>
 <li>note the changing state of physical and pseduo motors</li>
 <li>show absolute and relative mode of move</li>
@@ -13693,25 +13730,21 @@ This should  show the "/monitor" panel. Move it to a tab together with "/mirror"
 <li>Create a Tango DB tree panel:<ul>
 <li>Use New Panel button<ul>
 <li>Select TaurusDBTreeWidget and use name <code>db</code></li>
-<li>Click on "Advanced Settings" and set <code>tango://buster.localdomain:10000</code> as model</li>
-<li>Click on finish</li>
+<li>Click on "Advanced Settings" and set <code>tango://buster.localdomain:10000</code> as model and click on finish</li>
 </ul>
 </li>
-<li>place the "db" panel somewhere</li>
 </ul>
 </li>
 <li>Create a Plot panel:<ul>
 <li>Use New Panel button<ul>
-<li>Select TaurusPlot and use name <code>plot</code></li>
-<li>Click on finish</li>
+<li>Select TaurusPlot and use name <code>plot</code> and click on finish</li>
 </ul>
 </li>
 </ul>
 </li>
 <li>Create a Form panel:<ul>
 <li>Use New Panel button<ul>
-<li>Select TaurusForm and use name <code>form</code></li>
-<li>Click on finish</li>
+<li>Select TaurusForm and use name <code>form</code> and click on finish</li>
 </ul>
 </li>
 </ul>
@@ -13739,7 +13772,7 @@ This should  show the "/monitor" panel. Move it to a tab together with "/mirror"
 Note that this is a change at the <strong>widget</strong> level</li>
 <li>right-click label of "voltage" and select "Configurations-&gt;All" and set unit to "millivolts" and exit config dialog. 
 <br/>Note that this is a change at the <strong>Tango Attribute</strong> level!
-<br/>Don't worry about the error message. It warns abuot change of the attribute's value from dimensionless/unitless? to millivolts. </li>
+<br/>Don't worry about the error message. It warns about change of the attribute's value from dimensionles to millivolts. </li>
 <li>Note the units support: <ul>
 <li>both "ampli" and "voltage" now display "mV"</li>
 <li>if you use the line edit of "voltage" to write <code>1V</code>, the value will change to 1000 mV in both "ampli" and "voltage"</li>
@@ -13747,7 +13780,6 @@ Note that this is a change at the <strong>widget</strong> level</li>
 </li>
 </ul>
 </li>
-<li>Save a perspective called <code>tango</code> and exit (save all newly created panels as permanent)</li>
 </ul>
 
 </div>
@@ -13801,18 +13833,18 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <li>provide a simplified interface to it</li>
 </ul>
 </li>
-<li>Run <code>uct</code> macro in Spock
+<li>Run <code>uct</code> macro (in Spock):
 <pre><code>uct</code></pre>
 </li>
-<li>Open <code>expconf</code> in Spock
+<li>Open <code>expconf</code> (in Spock):
 <pre><code>expconf</code></pre>
 </li>
-<li>Disable some channels in the <code>expconf</code> e.g. <code>ct02</code> and <code>ct04</code> (Enabled column -&gt; False) and run <code>ct</code> macro in spock:
+<li>Disable some channels in the <code>expconf</code> e.g. <code>ct02</code> and <code>ct04</code> (Enabled column -&gt; False) and run <code>ct</code> macro (in Spock):
 <pre><code>ct</code></pre>
 </li>
 <li>Briefly review other configuration parameters</li>
 <li>Add 1D channel <code>oned01</code> in <code>expconf</code> (Add channel <code>+</code> button), apply changes and run <code>ct</code> macro</li>
-<li>Create new measurement group using the <code>defmeas</code> macro in Spock and run <code>ct</code> afterwards:
+<li>Create new measurement group using the <code>defmeas</code> macro and run <code>ct</code> afterwards (in Spock):
 <pre><code>defmeas mntgrp02 ct01 twod01
 ct</code></pre>
 <ul>
@@ -13828,17 +13860,33 @@ ct</code></pre>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Generic-Scan-Framework---demo">Generic Scan Framework - demo<a class="anchor-link" href="#Generic-Scan-Framework---demo">&#182;</a></h2><ul>
+<h2 id="Generic-Scan-Framework-(GSF)">Generic Scan Framework (GSF)<a class="anchor-link" href="#Generic-Scan-Framework-(GSF)">&#182;</a></h2><h3 id="Deomnstration-of-different-scanning-and-synchronization-modes">Deomnstration of different scanning and synchronization modes<a class="anchor-link" href="#Deomnstration-of-different-scanning-and-synchronization-modes">&#182;</a></h3>
+</div>
+</div>
+</div></section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Demonstration-of-different-scanning-and-synchronization-modes---preparation">Demonstration of different scanning and synchronization modes - preparation<a class="anchor-link" href="#Demonstration-of-different-scanning-and-synchronization-modes---preparation">&#182;</a></h3><ul>
 <li>Precise software synchronized continuous scans require intensive monitoring loops. Increase the frequency of position checks (in Spock) and restart the Sardana server:
 <pre><code>Pool_demo1_1.put_property({"MotionLoop_StatesPerPosition":"1"})</code></pre>
 </li>
-<li>Start taurustrend with high frequency of polling (in bash):
+<li>Start taurustrend with high frequency of polling:
 <pre><code>taurus tpg trend mot01/position "eval:int(bool({ct01/state}))"</code></pre>
 <ul>
 <li>Configure <em>Forced read</em> period of 10 ms </li>
 <li>Configure fill area of the state curve and move it to y2 axis in <em>Plot configuration</em></li>
 </ul>
 </li>
+</ul>
+
+</div>
+</div>
+</div></section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Demonstration-of-different-scanning-and-synchronization-modes---demo">Demonstration of different scanning and synchronization modes - demo<a class="anchor-link" href="#Demonstration-of-different-scanning-and-synchronization-modes---demo">&#182;</a></h3><ul>
 <li>Demonstrate step scan in Spock:
 <pre><code>ascan mot01 0 10 10 1</code></pre>
 </li>
@@ -13860,7 +13908,7 @@ time:
 
 </div>
 </div>
-</div></section></section><section><section>
+</div></section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -13883,15 +13931,21 @@ time:
 
 </div>
 </div>
-</div></section></section><section><section>
+</div></section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Recorders---demo">Recorders - demo<a class="anchor-link" href="#Recorders---demo">&#182;</a></h2><h3 id="Demonstrate-recorder-selection-based-on-the-file-extension">Demonstrate recorder selection based on the file extension<a class="anchor-link" href="#Demonstrate-recorder-selection-based-on-the-file-extension">&#182;</a></h3><ul>
-<li>In spock start <code>expconf</code></li>
+<li>Start <code>expconf</code> (in Spock):
+<pre><code>expconf</code></pre>
+</li>
 <li>In <code>expconf</code> <em>Storage</em> tab set scan file to <code>test.h5</code> and directory to <code>/tmp</code> (equivalent in Spock with <code>senv ScanFile test.h5</code> and <code>senv ScanDir /tmp</code>)</li>
-<li>Execute a scan: <code>ascan mot01 0 2 2 0.1</code></li>
-<li>Access to the data with <code>silx</code></li>
+<li>Execute a scan (in Spock):
+<pre><code>ascan mot01 0 2 2 0.1</code></pre>
+</li>
+<li>Access to the data with <code>silx</code>:
+<pre><code>silx view</code></pre>
+</li>
 <li>Close the <code>silx</code></li>
 </ul>
 
@@ -13933,8 +13987,12 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <li>Sardana built-in macros are importable from <code>sardana.macroserver.macros</code></li>
 <li>The plugin discovery system is based on directory scanning and python module inspection</li>
 <li>Custom macros should be installed in one of the <code>MacroPath</code> directories:<ul>
-<li>Create <code>macros</code> directory: <code>mkdir /home/vagrant/macros</code></li>
-<li>In spock: <code>_MACRO_SERVER.put_property({"MacroPath":["/home/vagrant/macros", "/home/vagrant/.local/lib/python3.7/site-packages/sardana/macroserver/macros/examples"]})</code></li>
+<li>Create <code>macros</code> directory:
+<pre><code>mkdir /home/vagrant/macros</code></pre>
+</li>
+<li>Configure <code>MacroPath</code> (in Spock):
+<pre><code>_MACRO_SERVER.put_property({"MacroPath":["/home/vagrant/macros", "/home/vagrant/.local/lib/python3.7/site-packages/sardana/macroserver/macros/examples"]})</code></pre>
+</li>
 <li>Restart the Sardana server</li>
 </ul>
 </li>
@@ -13961,11 +14019,17 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Hello-world">Hello world<a class="anchor-link" href="#Hello-world">&#182;</a></h1><ul>
-<li>In spock type: <code>edmac hello_world mymacros</code></li>
+<li>Create <code>hello_world</code> macro (in Spock):
+<pre><code>edmac hello_world mymacros</code></pre>
+<ul>
 <li>Implement a function decorated with <code>macro</code> decorator that can be found in <code>sardana.macroserver.macro</code></li>
 <li>Use <code>self.output()</code> to print something...</li>
 <li>Exit from editor and apply changes on the server [y]</li>
-<li>Run <code>hello_world</code> macro</li>
+</ul>
+</li>
+<li>Run <code>hello_world</code> macro (in Spock):
+<pre><code>hello_world</code></pre>
+</li>
 </ul>
 
 </div>
@@ -14011,12 +14075,14 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 
 </div>
 </div>
-</div></section></section><section><section>
+</div></section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Logging-in-macros---demo">Logging in macros - demo<a class="anchor-link" href="#Logging-in-macros---demo">&#182;</a></h3><ul>
-<li>Edit <code>hello_world</code> macro and add a <code>self.info("How are you?")</code><ul>
+<li>Edit <code>hello_world</code> macro and add a <code>self.info("How are you?")</code>
+<pre><code>edmac hello_world</code></pre>
+<ul>
 <li>Note about change of the color in Spock</li>
 </ul>
 </li>
@@ -14058,7 +14124,9 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Macro-parameters---demo">Macro parameters - demo<a class="anchor-link" href="#Macro-parameters---demo">&#182;</a></h3><ul>
-<li>Open <code>/home/vagrant/macros/mymacros.py</code> module with an external editor</li>
+<li>Open <code>~/macros/mymacros.py</code> module with an external editor e.g.
+<pre><code>kwrite ~/macros/mymacros.py</code></pre>
+</li>
 <li>Develop a new macro: <code>move</code></li>
 <li>Add two macro parameters according to the <a href="https://sardana-controls.org/devel/howto_macros/macros_general.html#adding-parameters-to-your-macro">Adding macro parameters documentation</a><ul>
 <li>moveable of type <code>Moveable</code></li>
@@ -14066,11 +14134,17 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </ul>
 </li>
 <li>Move the motor to the position according to the <a href="https://sardana-controls.org/devel/api/sardana/taurus/core/tango/sardana/pool.html">Moveable API</a> (<code>moveable.move(position)</code>)</li>
-<li>Apply the new code on the server using the <code>relmaclib mymacros</code> macro (in Spock)</li>
-<li>Show the macro help in Spock: <code>move?</code></li>
+<li>Apply the new code on the server using the <code>relmaclib</code> macro (in Spock)
+<pre><code>relmaclib mymacros</code></pre>
+</li>
+<li>Show the macro help (in Spock):
+<pre><code>move?</code></pre>
+</li>
 <li>Continue developing your macro to print the motor position (<code>moveable.getPosition()</code>)</li>
 <li>Apply the new code on the server using the <code>relmac macro</code> macro (in Spock)</li>
-<li>Run <code>move mot01 10</code></li>
+<li>Run <code>move</code> macro (in Spock):
+<pre><code>move mot01 10</code></pre>
+</li>
 </ul>
 
 </div>
@@ -14078,47 +14152,18 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div></section><section>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">from</span> <span class="nn">sardana.macroserver.macro</span> <span class="kn">import</span> <span class="n">macro</span><span class="p">,</span> <span class="n">Type</span>
-
-<span class="nd">@macro</span><span class="p">([[</span><span class="s2">&quot;moveable&quot;</span><span class="p">,</span> <span class="n">Type</span><span class="o">.</span><span class="n">Moveable</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="s2">&quot;moveable to move&quot;</span><span class="p">],</span>
+<div class=" highlight hl-ipython2"><pre><span></span><span class="nd">@macro</span><span class="p">([[</span><span class="s2">&quot;moveable&quot;</span><span class="p">,</span> <span class="n">Type</span><span class="o">.</span><span class="n">Moveable</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="s2">&quot;moveable to move&quot;</span><span class="p">],</span>
         <span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="n">Type</span><span class="o">.</span><span class="n">Float</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="s2">&quot;absolute position&quot;</span><span class="p">]])</span>
 <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moveable</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;This macro moves a moveable to the specified position&quot;&quot;&quot;</span>
     <span class="n">moveable</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="s2">&quot;{} is now at {}&quot;</span><span class="p">,</span> <span class="n">moveable</span><span class="o">.</span><span class="n">getName</span><span class="p">(),</span> <span class="n">moveable</span><span class="o">.</span><span class="n">getPosition</span><span class="p">())</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="s2">&quot;{} is now at {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">moveable</span><span class="o">.</span><span class="n">getName</span><span class="p">(),</span> <span class="n">moveable</span><span class="o">.</span><span class="n">getPosition</span><span class="p">()))</span>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-green-fg">&lt;ipython-input-1-2ec178697a3b&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
-<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-green-fg">from</span> sardana<span class="ansi-blue-fg">.</span>macroserver<span class="ansi-blue-fg">.</span>macro <span class="ansi-green-fg">import</span> macro<span class="ansi-blue-fg">,</span> Type
-<span class="ansi-green-intense-fg ansi-bold">      2</span> 
-<span class="ansi-green-fg">----&gt; 3</span><span class="ansi-red-fg"> @macro([ [&#34;moveable&#34;, Type.Moveable, None, &#34;moveable to move&#34;],
-</span><span class="ansi-green-intense-fg ansi-bold">      4</span>          [&#34;position&#34;, Type.Float, None, &#34;absolute position&#34;] ])
-<span class="ansi-green-intense-fg ansi-bold">      5</span> <span class="ansi-green-fg">def</span> move<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> moveable<span class="ansi-blue-fg">,</span> position<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-
-<span class="ansi-red-fg">AttributeError</span>: &#39;TypeNames&#39; object has no attribute &#39;Moveable&#39;</pre>
-</div>
-</div>
-
 </div>
 </div>
 
@@ -14264,10 +14309,12 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Hooks---programatically">Hooks - programatically<a class="anchor-link" href="#Hooks---programatically">&#182;</a></h3><ul>
-<li><code>prdef loop</code></li>
-<li><code>loop 0 10 1</code></li>
-<li><code>prdef captain_hook</code></li>
-<li><code>captain_hook 0 10 1</code></li>
+<li>Demonstrate programatic usage of hook (in Spock, line by line):
+<pre><code>prdef loop
+loop 0 10 1
+prdef captain_hook
+captain_hook 0 10 1</code></pre>
+</li>
 </ul>
 
 </div>
@@ -14277,11 +14324,13 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="General-Hooks---demo">General Hooks - demo<a class="anchor-link" href="#General-Hooks---demo">&#182;</a></h3><ul>
-<li><code>lsgh</code></li>
-<li><code>defgh "wm mot01" pre-acq</code></li>
-<li><code>ct</code></li>
-<li><code>udefgh "wm mot01"</code></li>
-<li><code>ct</code></li>
+<li>Demonstrate usage of Geneal Hooks (in Spock, liny by line):
+<pre><code>lsgh
+defgh "wm mot01" pre-acq
+ct
+udefgh "wm mot01"
+ct</code></pre>
+</li>
 </ul>
 
 </div>
@@ -14299,15 +14348,15 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 
 </div>
 </div>
-</div></section></section><section><section>
+</div></section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Interactive-macros---demo">Interactive macros - demo<a class="anchor-link" href="#Interactive-macros---demo">&#182;</a></h3><ul>
-<li><code>prdef ask_number_of_points</code></li>
-<li><code>ask_number_of_points</code></li>
-<li><code>prdef ask_for_moveable</code></li>
-<li><code>ask_for_moveable</code></li>
+<li>Demonstrate interactive macros (in Spock, line by line):
+<pre><code>prdef ask_number_of_points
+ask_number_of_points</code></pre>
+</li>
 </ul>
 
 </div>
@@ -14323,13 +14372,15 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 
 </div>
 </div>
-</div></section></section><section><section>
+</div></section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Ploting-in-macros---demo">Ploting in macros - demo<a class="anchor-link" href="#Ploting-in-macros---demo">&#182;</a></h3><ul>
-<li><code>prdef random_image</code></li>
-<li><code>random_image</code></li>
+<li>Demonstrate plotting in macros (in Spock, line by line):
+<pre><code>prdef random_image
+random_image</code></pre>
+</li>
 </ul>
 
 </div>
@@ -14369,10 +14420,9 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <li>Stored persistently</li>
 <li>API: <code>getEnv</code> and <code>setEnv</code> or simply <code>senv</code> macro</li>
 <li>Different levels: Global, Door, Macro</li>
-<li>Example:<ul>
-<li><code>senv ActiveMntGrp mntgrp01</code></li>
-<li><code>ct</code></li>
-</ul>
+<li>Example (in Spokc, line by line):
+<pre><code>senv ActiveMntGrp mntgrp01
+ct</code></pre>
 </li>
 </ul>
 
@@ -14476,8 +14526,12 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <li>Sardana built-in controllers are importable from <code>sardana.pool.poolcontrollers</code></li>
 <li>The plugin discovery system is based on directory scanning and python module inspection</li>
 <li>Custom controllers should be installed in one of the <code>PoolPath</code> directories:<ul>
-<li>Create /controllers directory: <code>mkdir ~/controllers</code></li>
-<li>In spock: <code>Pool_demo1_1.put_property({"PoolPath":["/home/vagrant/controllers"]})</code></li>
+<li>Create /controllers directory:
+<pre><code>mkdir ~/controllers</code></pre>
+</li>
+<li>In spock configure <code>PoolPath</code>:
+<pre><code>Pool_demo1_1.put_property({"PoolPath":["/home/vagrant/controllers"]})</code></pre>
+</li>
 <li>Restart the Sardana server</li>
 </ul>
 </li>
@@ -14491,7 +14545,9 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Blender-Blades-Motor-Controller">Blender Blades Motor Controller<a class="anchor-link" href="#Blender-Blades-Motor-Controller">&#182;</a></h3><ul>
-<li>Open the code: <code>kwrite sardana-training/controllers/templates/BlenderBladesMotorCtrl.py</code></li>
+<li>Open the code with your favourite editor e.g.:
+<pre><code>kwrite ~/sardana-training/controllers/templates/BlenderBladesMotorCtrl.py</code></pre>
+</li>
 </ul>
 
 </div>
@@ -14501,10 +14557,14 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Blender-Blades-Motor-Controller">Blender Blades Motor Controller<a class="anchor-link" href="#Blender-Blades-Motor-Controller">&#182;</a></h3><ul>
-<li>Install Blender Slits system: <code>pip3 install --user /home/vagrant/sardana-training/blender-slits</code></li>
-<li>Start hardware: <code>blender-slits-server</code></li>
+<li>Install Blender Slits system:
+<pre><code>pip3 install --user ~/sardana-training/blender-slits</code></pre>
+</li>
+<li>Start the blnder simulation: 
+<pre><code>blender-slits-server</code></pre>
+</li>
 <li>Blender Blades system (NOT PART OF SARDANA): <ul>
-<li>Communication protocol is explained in: <code>sardana-training/blender-slits/README.md</code></li>
+<li>Communication protocol is explained in: <code>~/sardana-training/blender-slits/README.md</code></li>
 <li>Directions are in the hardware coordinate system</li>
 <li>Positions are not calibrated in the local coordinate system - beam axis is not the zero!</li>
 </ul>
@@ -14524,6 +14584,7 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <li>If an exception is raised when constructing the controller, the controller automatically gets into the Fault state and its status describes the exception that occured</li>
 </ul>
 </li>
+<li><a href="http://www.sardana-controls.org/devel/howto_controllers/howto_controller.html#extra-controller-properties">Define controller properties</a>: <code>host</code> and <code>port</code></li>
 <li>Instantiate <code>BlenderBlades</code> in the constructor</li>
 </ul>
 
@@ -14534,11 +14595,21 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Instantiate-controller">Instantiate controller<a class="anchor-link" href="#Instantiate-controller">&#182;</a></h3><ul>
-<li>Deploy controller: <code>ln -s ~/sardana-training/controllers/templates/BlenderBladesMotorCtrl.py ~/controllers</code></li>
-<li>Load it in the system - in spock: <code>addctrllib BlenderBladesMotorCtrl</code></li>
-<li>Check if the controller library was corectly loaded: <code>lsctrllib</code></li>
-<li>Create an instance of the controller: <code>defctrl BlenderBladesMotorController bleblactrl</code></li>
-<li>Ask for controllers state: <code>bleblactrl.state()</code></li>
+<li>Deploy controller:
+<pre><code>ln -s ~/sardana-training/controllers/templates/BlenderBladesMotorCtrl.py ~/controllers</code></pre>
+</li>
+<li>Load it in the system (in Spock):
+<pre><code>addctrllib BlenderBladesMotorCtrl</code></pre>
+</li>
+<li>Check if the controller library was corectly loaded (in Spock):
+<pre><code>lsctrllib</code></pre>
+</li>
+<li>Create an instance of the controller (in Spock):
+<pre><code>defctrl BlenderBladesMotorController bleblactrl</code></pre>
+</li>
+<li>Ask for controllers state (in Spock):
+<pre><code>bleblactrl.state()</code></pre>
+</li>
 </ul>
 
 </div>
@@ -14586,10 +14657,20 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Instantiate-top-motor">Instantiate top motor<a class="anchor-link" href="#Instantiate-top-motor">&#182;</a></h3><ul>
-<li>Reload controller code: <code>relctrlcls BlenderBladesMotorController</code> </li>
-<li>Create motor instance: <code>defelem top bleblactrl 1</code></li>
-<li>Ask for motor state: <code>top.state()</code></li>
-<li>Ask for motor position: <code>top.position</code> or <code>wm top</code></li>
+<li>Reload controller code (in Spock):
+<pre><code>relctrlcls BlenderBladesMotorController</code></pre>
+</li>
+<li>Create motor instance (in Spock): 
+<pre><code>defelem top bleblactrl 1</code></pre>
+</li>
+<li>Ask for motor state (in Spock):
+<pre><code>top.state()</code></pre>
+</li>
+<li>Ask for motor position (in Spock):
+<pre><code>top.position</code></pre>
+or
+<pre><code>wm top</code></pre>
+</li>
 </ul>
 
 </div>
@@ -14609,8 +14690,12 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Move-top-motor">Move top motor<a class="anchor-link" href="#Move-top-motor">&#182;</a></h3><ul>
-<li>Reload controller code: <code>relctrlcls BlenderBladesMotorController</code> </li>
-<li>Ask motor to move: <code>umvr top 10</code></li>
+<li>Reload controller code (in Spock):
+<pre><code>relctrlcls BlenderBladesMotorController</code></pre>
+</li>
+<li>Ask motor to move (in Spock):
+<pre><code>umvr top 10</code></pre>
+</li>
 </ul>
 
 </div>
@@ -14630,9 +14715,13 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Move-and-abort-top-motor">Move and abort top motor<a class="anchor-link" href="#Move-and-abort-top-motor">&#182;</a></h3><ul>
-<li>Reload controller code: <code>relctrlcls BlenderBladesMotorController</code> </li>
-<li>Ask motor to move: <code>umvr top 50</code></li>
-<li>Issue <code>Ctrl+C</code> in spock</li>
+<li>Reload controller code (in Spock):
+<pre><code>relctrlcls BlenderBladesMotorController</code></pre>
+</li>
+<li>Ask motor to move (in Spock):
+<pre><code>umvr top 50</code></pre>
+</li>
+<li>Issue <code>Ctrl+C</code> in Spock</li>
 </ul>
 
 </div>
@@ -14659,11 +14748,18 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Read-standard-axis-attributes">Read standard axis attributes<a class="anchor-link" href="#Read-standard-axis-attributes">&#182;</a></h3><ul>
-<li><code>top.velocity</code></li>
-<li><code>top.acceleration</code></li>
-<li><code>top.deceleration</code></li>
-<li><code>top.base_rate</code></li>
-<li><code>top.state_per_unit</code></li>
+<li>Read attributes (in Spock):<ul>
+<li>Read velocity:
+<pre><code>top.velocity</code></pre>
+</li>
+<li>Read acceleration time:
+<pre><code>top.acceleration</code></pre>
+</li>
+<li>Read deceleration time:
+<pre><code>top.deceleration</code></pre>
+</li>
+</ul>
+</li>
 </ul>
 
 </div>
@@ -14690,12 +14786,15 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Write-standard-axis-attributes">Write standard axis attributes<a class="anchor-link" href="#Write-standard-axis-attributes">&#182;</a></h3><ul>
-<li><code>top.velocity = 10</code></li>
-<li><code>top.acceleration = 0.1</code></li>
-<li><code>top.deceleration = 0.1</code></li>
-<li><code>top.base_rate = 5</code> -&gt; exception!</li>
-<li><code>top.state_per_unit = 100</code> -&gt; exception!</li>
-<li>Make some moves...</li>
+<li>Change velocity attribute (in Spock):<ul>
+<li>Write new velocity:
+<pre><code>top.velocity = 1</code></pre>
+</li>
+<li>Make some moves e.g.
+<pre><code>umvr top 5</code></pre>
+</li>
+</ul>
+</li>
 </ul>
 
 </div>
@@ -14705,20 +14804,28 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Align-slits">Align slits<a class="anchor-link" href="#Align-slits">&#182;</a></h3><ul>
-<li>Define the rest of the motors:<ul>
-<li><code>defm bottom bleblactrl 2</code></li>
-<li><code>defm left bleblactrl 3</code></li>
-<li><code>defm right bleblactrl 4</code></li>
-</ul>
+<li>Define the rest of the motors (in Spock, line by line):
+<pre><code>defm bottom bleblactrl 2
+defm left bleblactrl 3
+defm right bleblactrl 4</code></pre>
 </li>
-<li>Ask for motor positions: <code>wm top bottom left right</code></li>
-<li>Determine direction with relative move and adjust sign:<ul>
-<li><code>bottom.sign = -1</code></li>
-<li><code>left.sign = -1</code></li>
-</ul>
+<li>Ask for motor positions (in Spock):
+<pre><code>wm top bottom left right</code></pre>
 </li>
-<li>Change offset by using the <code>set_user_pos</code> macro e.g. <code>set_user_pos top 0</code></li>
-<li>Open and close gap by moving physical motors: <code>mv top 5 bottom 5 left 5 right 5</code></li>
+<li>Determine direction with relative move and adjust sign (in Spock, line by line):
+<pre><code>bottom.sign = -1
+left.sign = -1</code></pre>
+</li>
+<li>Fully close slits and change offset by using the <code>set_user_pos</code> macro (in Spock, line by line):
+<pre><code>set_user_pos top 0
+set_user_pos bottom 0
+set_user_pos left 0
+set_user_pos right 0</code></pre>
+</li>
+<li>Open and close gap by moving physical motors (in Spock, line by line)
+<pre><code>mv top 5 bottom 5 left 5 right 5
+mv top 0 bottom 0 left 0 right 0</code></pre>
+</li>
 </ul>
 
 </div>
@@ -14732,8 +14839,12 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <li>Physical axes = motors that will be moved</li>
 <li>Pseudo axes = virtual axes consisting of physical axes</li>
 <li><code>pseudo_motor_roles</code> and <code>motor_roles</code> class members defines number of pseudo and physical axes used by the controller</li>
-<li>Instantiate vertical slits controller: <code>defctrl Slit vertctrl sl2t=top sl2b=bottom Gap=gapvert Offset=offsetvert</code></li>
-<li>Instantiate horizontal slits controller: <code>defctrl Slit horctrl sl2t=right sl2b=left Gap=gaphor Offset=offsethor</code></li>
+<li>Instantiate vertical slits controller (in Spock): 
+<pre><code>defctrl Slit vertctrl sl2t=top sl2b=bottom Gap=gapvert Offset=offsetvert</code></pre>
+</li>
+<li>Instantiate horizontal slits controller:
+<pre><code>defctrl Slit horctrl sl2t=right sl2b=left Gap=gaphor Offset=offsethor</code></pre>
+</li>
 </ul>
 
 </div>
@@ -14765,7 +14876,7 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Play-with-the-slits">Play with the slits<a class="anchor-link" href="#Play-with-the-slits">&#182;</a></h3><ul>
 <li>Open the gaps: <code>mv gapvert 10 gaphor 10</code></li>
-<li>Make a scan of offset: <code>dscan offsetvert -40 40 8 0.1</code></li>
+<li>Make a scan of offset: <code>dscan offsetvert -10 10 10 0.1</code></li>
 </ul>
 
 </div>
@@ -14805,7 +14916,9 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Network-Traffic-Counter">Network Traffic Counter<a class="anchor-link" href="#Network-Traffic-Counter">&#182;</a></h3><ul>
-<li>Open the code: <code>kwrite sardana-training/controllers/templates/NetworkTrafficCTCtrl.py</code></li>
+<li>Open the code in your favourite editor e.g.:
+<pre><code>kwrite sardana-training/controllers/templates/NetworkTrafficCTCtrl.py</code></pre>
+</li>
 </ul>
 
 </div>
@@ -14817,11 +14930,12 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <h3 id="Network-Traffic-Counter">Network Traffic Counter<a class="anchor-link" href="#Network-Traffic-Counter">&#182;</a></h3><ul>
 <li>Network traffic counter counts bytes that pass via a network interface (both ways)</li>
 <li>Demo:<ul>
-<li>Directly from the system: <code>cat /proc/net/dev | grep eth0</code></li>
-<li>Using python function:<ul>
-<li><code>cd ~/sardana-training/controllers/</code></li>
-<li><code>python3 -c "from NetworkTrafficCTCtrl import read_network_counts; print(read_network_counts('eth0'))"</code></li>
-</ul>
+<li>Directly from the system:
+<pre><code>cat /proc/net/dev | grep eth0</code></pre>
+</li>
+<li>Using python function:
+<pre><code>cd ~/sardana-training/controllers
+python3 -c "from NetworkTrafficCTCtrl import read_network_counts; print(read_network_counts('eth0'))"</code></pre>
 </li>
 </ul>
 </li>
@@ -14871,10 +14985,18 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Instantiate-controller">Instantiate controller<a class="anchor-link" href="#Instantiate-controller">&#182;</a></h3><ul>
-<li>Deploy controller: <code>ln -s ~/sardana-training/controllers/templates/NetworkTrafficCTCtrl.py ~/controllers</code></li>
-<li>Load it in the system - in spock: <code>addctrllib NetworkTrafficCTCtrl</code></li>
-<li>Create an instance of the controller: <code>defctrl NetworkTrafficCounterTimerController netctrl interface eth0</code></li>
-<li>Ask for controllers state: <code>netctrl.state()</code></li>
+<li>Deploy controller:
+<pre><code>ln -s ~/sardana-training/controllers/templates/NetworkTrafficCTCtrl.py ~/controllers</code></pre>
+</li>
+<li>Load it in the system (in Spock):
+<pre><code>addctrllib NetworkTrafficCTCtrl</code></pre>
+</li>
+<li>Create an instance of the controller:
+<pre><code>defctrl NetworkTrafficCounterTimerController netctrl interface eth0</code></pre>
+</li>
+<li>Ask for controllers state:
+<pre><code>netctrl.state()</code></pre>
+</li>
 </ul>
 
 </div>
@@ -14927,9 +15049,15 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Instantiate-net-counter">Instantiate net counter<a class="anchor-link" href="#Instantiate-net-counter">&#182;</a></h3><ul>
-<li>Reload controller code: <code>relctrlcls NetworkTrafficCounterTimerController</code> </li>
-<li>Create motor instance: <code>defelem net netctrl 1</code></li>
-<li>Ask for motor state: <code>net.state()</code></li>
+<li>Reload controller code (in Spock):
+<pre><code>relctrlcls NetworkTrafficCounterTimerController</code></pre>
+</li>
+<li>Create motor instance (in Spock):
+<pre><code>defelem net netctrl 1</code></pre>
+</li>
+<li>Ask for motor state (in Spock):
+<pre><code>net.state()</code></pre>
+</li>
 </ul>
 
 </div>
@@ -14950,11 +15078,16 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Demonstrate-single-acquisition-with-net-counter">Demonstrate single acquisition with net counter<a class="anchor-link" href="#Demonstrate-single-acquisition-with-net-counter">&#182;</a></h3><ul>
-<li>Reload controller code: <code>relctrlcls NetworkTrafficCounterTimerController</code> </li>
-<li><code>uct 1 net</code> -&gt; zero counts!</li>
-<li>Install <code>wget</code> tool and get sardana CHANGELOG while long counting e.g. <code>uct net 10</code> execute:<ul>
-<li><code>wget https://github.com/sardana-org/sardana/blob/develop/CHANGELOG.md</code></li>
-</ul>
+<li>Reload controller code (in Spock):
+<pre><code>relctrlcls NetworkTrafficCounterTimerController</code></pre>
+</li>
+<li>Count (in Spock)  -&gt; zero counts!:
+<pre><code>uct 1 net</code></pre>
+</li>
+<li>While long counting (in Spock):
+<pre><code>uct net 10</code></pre>
+get sardana CHANGELOG with the <code>wget</code> tool:
+<pre><code>wget https://github.com/sardana-org/sardana/blob/develop/CHANGELOG.md</code></pre>
 </li>
 </ul>
 
@@ -14972,12 +15105,24 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Instantiate-controller-and-experimental-channels">Instantiate controller and experimental channels<a class="anchor-link" href="#Instantiate-controller-and-experimental-channels">&#182;</a></h3><ul>
-<li>Deploy controller: <code>ln -s ~/sardana-training/controllers/Blender2DCtrl.py ~/controllers</code></li>
-<li>Load it in the system - in spock: <code>addctrllib Blender2DCtrl</code></li>
-<li>Create an instance of the controller: <code>defctrl Blender2DController ble2dctrl</code></li>
-<li>Ask for controllers state: <code>ble2dctrl.state()</code></li>
-<li>Create an instance of the 2D experimental channel: <code>defelem ble2d ble2dctrl</code></li>
-<li>Ask for channels state: <code>ble2d.state()</code></li>
+<li>Deploy controller:
+<pre><code>ln -s ~/sardana-training/controllers/Blender2DCtrl.py ~/controllers</code></pre>
+</li>
+<li>Load it in the system (in Spock):
+<pre><code>addctrllib Blender2DCtrl</code></pre>
+</li>
+<li>Create an instance of the controller (in Spock):
+<pre><code>defctrl Blender2DController ble2dctrl</code></pre>
+</li>
+<li>Ask for controllers state (in Spock): 
+<pre><code>ble2dctrl.state()</code></pre>
+</li>
+<li>Create an instance of the 2D experimental channel (in Spock): 
+<pre><code>defelem ble2d ble2dctrl</code></pre>
+</li>
+<li>Ask for channels state (in Spock):
+<pre><code>ble2d.state()</code></pre>
+</li>
 </ul>
 
 </div>
@@ -14987,14 +15132,30 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Acquire-with-the-detector---data-transfer">Acquire with the detector - data transfer<a class="anchor-link" href="#Acquire-with-the-detector---data-transfer">&#182;</a></h3><ul>
-<li>Configure timer: `ble2d.timer = "__self"</li>
-<li><code>ct 1 ble2d</code></li>
-<li>Show image (<code>value</code> attribute): <code>taurus form ble2d</code></li>
-<li>In <code>expconf</code> define measurement group and configure storage to HDF5 file</li>
-<li><code>mv gapvert 10 gaphor 10 offsetvert 0 offsethor 0</code></li>
-<li><code>mv left 50</code></li>
-<li><code>dscan offsetvert -10 10 10 0.1</code></li>
-<li>Show images with <code>silx view</code> (remember to close <code>silx</code> afterwards)</li>
+<li>Configure timer (in Spock, line by line):
+<pre><code>ble2d.timer = "__self"
+ct 1 ble2d</code></pre>
+</li>
+<li>Show image (<code>value</code> attribute): 
+<pre><code>taurus form ble2d</code></pre>
+</li>
+<li>In <code>expconf</code> (started from Spock):<ul>
+<li>define measurement group with the <code>ble2d</code> channel</li>
+<li>configure storage to HDF5 file (<em>Storage</em> tab -&gt; <em>File name(s)</em> &amp; <em>Path</em>):</li>
+</ul>
+</li>
+<li>Move slits to a well known position (in Spock):
+<pre><code>mv gapvert 10 gaphor 10 offsetvert 0 offsethor 0</code></pre>
+</li>
+<li>Slightly open left blade (in Spock):
+<pre><code>mv left 50</code></pre>
+</li>
+<li>Scan the vertical offset (in Spock):
+<pre><code>dscan offsetvert -10 10 10 0.1</code></pre>
+</li>
+<li>Show images with <code>silx</code> (remember to close <code>silx</code> afterwards):
+<pre><code>silx view</code></pre>
+</li>
 </ul>
 
 </div>
@@ -15009,13 +15170,27 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <li><em>Ref Pattern</em> -&gt; <code>h5file:///tmp/ble2d_img{image_nb:03d}.h5</code></li>
 </ul>
 </li>
-<li>Repeat the last scan: <code>dscan offsetvert -10 10 10 0.1</code></li>
-<li>Show images via VDS with <code>silx view</code> (remember to close <code>silx</code> afterwards)</li>
+<li>Repeat the last scan (in Spock):
+<pre><code>dscan offsetvert -10 10 10 0.1</code></pre>
+</li>
+<li>Show images via VDS with <code>silx</code> (remember to close <code>silx</code> afterwards):
+<pre><code>silx view</code></pre>
+<ul>
+<li>Note the usage of HDF5 VDS - image data are not stored in the Sardana file. </li>
+</ul>
+</li>
 </ul>
 
 </div>
 </div>
+</div></section></section><section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="What-else?">What else?<a class="anchor-link" href="#What-else?">&#182;</a></h1><h2 id="Questions?">Questions?<a class="anchor-link" href="#Questions?">&#182;</a></h2><h2 id="Propose-topics-for-dicsussion?">Propose topics for dicsussion?<a class="anchor-link" href="#Propose-topics-for-dicsussion?">&#182;</a></h2><h2 id="If-not-we-have-planty-of-other-features-that-we-could-briefly-introduce...">If not we have planty of other features that we could briefly introduce...<a class="anchor-link" href="#If-not-we-have-planty-of-other-features-that-we-could-briefly-introduce...">&#182;</a></h2>
 </div>
+</div>
+</div></section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -15027,7 +15202,7 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 
 </div>
 </div>
-</div>
+</div></section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -15038,7 +15213,7 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 
 </div>
 </div>
-</div>
+</div></section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -15054,7 +15229,7 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 
 </div>
 </div>
-</div>
+</div></section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -15065,7 +15240,7 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 
 </div>
 </div>
-</div>
+</div></section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -15097,7 +15272,7 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 
 </div>
 </div>
-</div>
+</div></section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -15118,24 +15293,23 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 <li>Position - synchronize measurements with moveable position</li>
 </ul>
 </li>
-<li>[TODO] equidistant, non-equidistant</li>
+<li><a href="https://sardana-controls.org/devel/howto_controllers/howto_triggergatecontroller.html#synchronization-description">Equidistant or non-equidistant</a></li>
 </ul>
 
 </div>
 </div>
-</div>
+</div></section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Units-support">Units support<a class="anchor-link" href="#Units-support">&#182;</a></h2><ul>
 <li><code>pint</code> module</li>
 <li>Support for managing and displaying units of values</li>
-<li>Unit matching and conversion (?)</li>
 </ul>
 
 </div>
 </div>
-</div>
+</div></section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -15146,20 +15320,7 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 
 </div>
 </div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Distributed-architecture">Distributed architecture<a class="anchor-link" href="#Distributed-architecture">&#182;</a></h2><ul>
-<li>Base components: Pool, MacroServer, Door</li>
-<li>Possibility to run with multiple Pools, MacroServers and Doors</li>
-<li>Many combinations for interconnection of these components are possible</li>
-<li>Whole system can run on a single machine as well as on multiple ones</li>
-</ul>
-
-</div>
-</div>
-</div>
+</div></section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -15173,7 +15334,7 @@ To view a copy of this license, visit <a href="http://creativecommons.org/licens
 
 </div>
 </div>
-</div>
+</div></section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
