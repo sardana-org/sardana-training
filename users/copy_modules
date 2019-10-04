@@ -1,0 +1,11 @@
+#!/usr/bin/bash
+
+sudo cp -R /root/.local/lib/python3.7/site-packages/taurus_pyqtgraph /home/vagrant/local/lib/python3.7/site-packages/
+sudo cp -R /root/.local/lib/python3.7/site-packages/taurus_pyqtgraph-0.3.0.dist-info /home/vagrant/local/lib/python3.7/site-packages/
+sudo chown -R vagrant:vagrant /home/vagrant/local/lib/python3.7/site-packages/taurus_pyqtgraph
+sudo chown -R vagrant:vagrant /home/vagrant/local/lib/python3.7/site-packages/taurus_pyqtgraph-0.3.0.dist-info
+
+sudo cp -R /root/.local/lib/python3.7/site-packages/h5py /home/vagrant/local/lib/python3.7/site-packages/
+sudo cp -R /root/.local/lib/python3.7/site-packages/h5py-2.10.0.dist-info /home/vagrant/local/lib/python3.7/site-packages/
+sudo chown -R vagrant:vagrant /home/vagrant/local/lib/python3.7/site-packages/h5py
+sudo chown -R vagrant:vagrant /home/vagrant/local/lib/python3.7/site-packages/h5py-2.10.0.dist-info
