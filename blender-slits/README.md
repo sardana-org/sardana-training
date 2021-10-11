@@ -55,7 +55,7 @@ You can use `nc` linux tool:
 $ nc 0 9999
 ?pos top
 pos top 20
-?move top 10
+move top 10
 Ready
 ```
 
